@@ -1,25 +1,42 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, Touchable, TouchableOpacity, View } from 'react-native';
-import Saludo from './Saludo'
-import BotonJugar from './BotonJugar';
+import React from 'react';
+import { NavigationContainer} from '@react-navigation/native';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+
+import Home from './screen/Home';
+import rankings from './screen/rankings';
+import Saludo from './Saludo';
+
+
+const Tab= createMaterialTopTabNavigator();
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-       <Saludo></Saludo>
-       <TouchableOpacity> <Text>BotonJugar</Text></TouchableOpacity>
-       <BotonJugar></BotonJugar>
+    
+  <NavigationContainer>
+    <Saludo/>
+    <Tab.Navigator
+    screenOptions={{
+      tabBarLabelStyle: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        
+      },
+      tabBarItemStyle: {width: 150, height: 50},
+      tabBarStyle: {backgroundColor: '#1c3482'},
+      tabBarActiveTintColor: '#ffffff',
+      tabBarInactiveTintColor: '#d6e3ff',
       
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+      }}
+      >
+        <Tab.Screen
+        name="inicio"
+        component={Home}
+        />
+        <Tab.Screen
+        name="rankings"
+        component={rankings}
+        />
+        
+        </Tab.Navigator>
+        </NavigationContainer>
+        );
+      }

@@ -1,42 +1,48 @@
-import React from 'react';
-import { NavigationContainer} from '@react-navigation/native';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-
-import Home from './screen/Home';
-import rankings from './screen/rankings';
-import Saludo from './Saludo';
-
-
-const Tab= createMaterialTopTabNavigator();
+/*import { View, Text, StyleSheet } from 'react-native'
+import React from 'react'
+import Jugar from './Jugar'
 export default function App() {
   return (
-    
-  <NavigationContainer>
-    <Saludo/>
-    <Tab.Navigator
-    screenOptions={{
-      tabBarLabelStyle: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        
-      },
-      tabBarItemStyle: {width: 150, height: 50},
-      tabBarStyle: {backgroundColor: '#1c3482'},
-      tabBarActiveTintColor: '#ffffff',
-      tabBarInactiveTintColor: '#d6e3ff',
-      
-      }}
+    <View style={styles.center}>
+      <Jugar><Text>Hola</Text></Jugar>
+    </View>
+  )
+}
+const styles = StyleSheet.create({
+    center: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#7688ac',
+        color: '#000000'
+    },
+});*/
+import React from 'react'
+import { NavigationContainer } from '@react-navigation/native'
+import { createStackNavigator } from '@react-navigation/stack'
+
+import Jugar from './Jugar'
+import Menu from './Menu'
+
+const Stack = createStackNavigator()
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false
+        }}
       >
-        <Tab.Screen
-        name="inicio"
-        component={Home}
+        <Stack.Screen
+          name="Jugar"
+          component={Jugar}
         />
-        <Tab.Screen
-        name="rankings"
-        component={rankings}
+        <Stack.Screen
+          name="Menu"
+          component={Menu}
         />
-        
-        </Tab.Navigator>
-        </NavigationContainer>
-        );
-      }
+      </Stack.Navigator>
+    </NavigationContainer>
+  )
+}

@@ -1,11 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import TouchableOpacity from './App'
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
 export default function BotonJugar() {
   return (
     <View  style={styles.container}>
-      <Text>Pantalla de niveles</Text>
-      <StatusBar style="auto" />
+      <TouchableOpacity>Pantalla de niveles</TouchableOpacity>
+      
     </View>
   );
 }
@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
   container: {
     //width:'100%',
     //height:'100%',
-    backgroundColor: '#ff8fd4',
+    backgroundColor: '#461f37',
     alignItems: 'center',
     justifyContent: 'center',   
   }

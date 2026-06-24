@@ -52,7 +52,19 @@ export default function Menu() {
     return (
        <>
             <Saludo />
-            <Tab.Navigator>
+            <Tab.Navigator screenOptions={{
+      tabBarLabelStyle: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        
+      },
+      tabBarItemStyle: {width: 150, height: 50},
+      tabBarStyle: {backgroundColor: '#1c3482'},
+      tabBarActiveTintColor: '#ffffff',
+      tabBarInactiveTintColor: '#d6e3ff',
+      
+      }}
+      >
                 <Tab.Screen
                     name="inicio"
                     component={Home}

@@ -4,7 +4,6 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 export default function BotonJugar() {
   return (
     <View  style={styles.container}>
-      <TouchableOpacity>Pantalla de niveles</TouchableOpacity>
       
     </View>
   );

@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-export default function Rankings() {
+export default function Nivel3() {
     return (
         <View style={styles.center}>
-            <Text>Pantalla de Rankings</Text>
+            <Text>Pantalla nivel 3</Text>
         </View>
     );
 }
@@ -12,7 +12,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        /* backgroundColor: '#d6e3ff',*/
         backgroundColor: 'transparent',
     },
 });

@@ -13,7 +13,8 @@ const styles = StyleSheet.create({
   container:{
     height: 90,
     alignItems: 'center',
-    backgroundColor: '#1c3482',
+    /*backgroundColor: '#1c3482',*/
+    backgroundColor: 'transparent'
   },
 titulo: {
   marginTop: 50,

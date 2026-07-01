@@ -63,7 +63,8 @@ return (
         resizeMode="cover"
     >
         <View style={styles.center}>
-        <TouchableOpacity style={styles.boton} onPress={() => navigation.navigate('Menu')}>
+        <TouchableOpacity
+            style={styles.boton} onPress={() => navigation.navigate('Menu')}>
             <Text style={styles.texto}>Jugar</Text>
         </TouchableOpacity>
         </View>
@@ -81,7 +82,7 @@ center: {
 },
 
 boton: {
-    backgroundColor: '#1c3482',
+    backgroundColor: '#57319e',
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 25,

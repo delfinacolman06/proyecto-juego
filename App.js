@@ -20,6 +20,7 @@ const styles = StyleSheet.create({
 import React from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground} from 'react-native'
 
 import Jugar from './Jugar'
 import Menu from './Menu'

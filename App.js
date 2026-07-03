@@ -23,27 +23,40 @@ import { createStackNavigator } from '@react-navigation/stack'
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground} from 'react-native'
 
 import Jugar from './Jugar'
+import IniciarSesion from './IniciarSesion';
+import Registrarse from './Registrarse';
 import Menu from './Menu'
 
 const Stack = createStackNavigator()
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false
-        }}
-      >
-        <Stack.Screen
-          name="Jugar"
-          component={Jugar}
-        />
-        <Stack.Screen
-          name="Menu"
-          component={Menu}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+      <NavigationContainer>
+  <Stack.Navigator
+    screenOptions={{
+      headerShown: false,
+    }}
+  >
+    <Stack.Screen
+      name="Jugar"
+      component={Jugar}
+    />
+
+    <Stack.Screen
+      name="IniciarSesion"
+      component={IniciarSesion}
+    />
+
+    <Stack.Screen
+      name="Registrarse"
+      component={Registrarse}
+    />
+
+    <Stack.Screen
+      name="Menu"
+      component={Menu}
+    />
+  </Stack.Navigator>
+</NavigationContainer>
   )
 }

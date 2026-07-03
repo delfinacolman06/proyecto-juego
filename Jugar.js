@@ -54,7 +54,8 @@ const styles = StyleSheet.create({
 })*/
 import React from 'react'
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground} from 'react-native'
-import Menu from './Menu'
+import IniciarSesion from './IniciarSesion'
+
 export default function Jugar({ navigation }) {
 return (
     <ImageBackground 
@@ -64,7 +65,7 @@ return (
     >
         <View style={styles.center}>
         <TouchableOpacity
-            style={styles.boton} onPress={() => navigation.navigate('Menu')}>
+            style={styles.boton} onPress={() => navigation.navigate('IniciarSesion')}>
             <Text style={styles.texto}>Jugar</Text>
         </TouchableOpacity>
         </View>

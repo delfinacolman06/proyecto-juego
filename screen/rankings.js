@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 export default function Rankings() {
     return (
         <View style={styles.center}>
-            <Text>Pantalla de Rankings</Text>
+           <Text>Pantalla de Rankings</Text>
         </View>
     );
 }

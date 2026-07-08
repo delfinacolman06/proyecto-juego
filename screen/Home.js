@@ -3,25 +3,17 @@ import { View, Text, StyleSheet, Button, TouchableOpacity, ImageBackground } fro
 import { createStackNavigator } from '@react-navigation/stack';
 import Rankings from './Rankings';
 import Niveles from '../Niveles';
-import BotonJugar from '../BotonJugar';
+
 const Stack = createStackNavigator();
 
-/*function Home() {
-  return (
-    <View style={styles.center}>
-      <Text>Pantalla de Inicio</Text>
-    </View>
-  );
-}*/
 
 function Home({ navigation }) {
   return (
     <View style={styles.center}>
-      <Button
-        title="Niveles"
-        onPress={() => navigation.navigate('Niveles')}
-      />
-      <BotonJugar>Hola</BotonJugar>
+      <TouchableOpacity style={styles.boton} onPress={() => navigation.navigate('Niveles')}>
+      <Text style={styles.texto}>Niveles</Text>
+      </TouchableOpacity>
+      
     </View>
   );
 }
@@ -65,9 +57,35 @@ export default function MyStack() {
 const styles = StyleSheet.create({
   center: {
     flex: 1,
-    justifyContent: 'center',
+    
     alignItems: 'center',
     backgroundColor: 'transparent',
+    
   },
- 
+  boton: {
+    width: 250,
+    height: 80,
+    backgroundColor: '#0a188433',
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 90,
+    borderWidth: 2,
+    borderColor: '#00000066',
+  },
+  texto:{
+    color:'white',
+    fontSize:18,
+    fontWeight:'bold',
+}, 
 });
+/*TRANSPARENCIA:
+    Color     |   Opacidad
+--------------|---------------
+#57319eFF   |      100%
+#57319eCC   |      80%
+#57319e99   |      60%
+#57319e66   |      40%
+#57319e33   |      20% 
+
+*/

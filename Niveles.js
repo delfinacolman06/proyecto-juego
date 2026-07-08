@@ -1,22 +1,3 @@
-/*import { View, Text, StyleSheet } from 'react-native'
-import React from 'react'
-
-export default function Niveles() {
-  return (
-    <View style={styles.center}>
-      <Text>¡Comienza la aventura!</Text>
-    </View>
-  )
-}
-const styles = StyleSheet.create({
-    center: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        /*backgroundColor: '#d6e3ff',
-        backgroundColor: 'transparent',
-    },
-});*/
 import React from 'react';
 import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -26,20 +7,10 @@ import Nivel2 from './screen/Nivel2';
 import Nivel3 from './screen/Nivel3';
 const Stack = createStackNavigator();
 
-
-/*function Home() {
-  return (
-    <View style={styles.center}>
-      <Text>Pantalla de Inicio</Text>
-    </View>
-  );
-}*/
-
-
 function Niveles({ navigation }) {
   return (
     <View style={styles.center}>
-      <Text style={styles.titulo}>ℕ𝕚𝕧𝕖𝕝𝕖𝕤</Text>
+      <Text style={styles.titulo}>Completa los niveles</Text>
       <View style={styles.botones}>
         <TouchableOpacity style={styles.boton} onPress={() => navigation.navigate('Nivel 1')}>
         <Text style={styles.texto}>Nivel 1</Text>
@@ -111,22 +82,17 @@ center:{
 
 titulo: {
     color: '#d6e3ff',
-    /*fontSize: 24,
+    fontSize: 25,
     fontWeight: 'bold',
     marginBottom: 30,
     margin: 50,
     textAlign: 'center',
-    fontFamily: "'Courier New', monospace",*/
-    
-    fontFamily: 'Courier New',
-    fontWeight: '900',      // Esto activa el grosor máximo (Bold)
-    fontSize: 56,           // Tamaño de letra sugerido
-   // letterSpacing: 1.5,     // Separa las letras para el efecto píxel
-    fontVariant: ['tabular-nums'], 
+    fontFamily: "'Courier New', monospace",
+    fontWeight: '900',      
   },
 
 boton:{
-    backgroundColor:'#57319e',
+    backgroundColor:'#0a188499',
     paddingVertical:15,
     width:'30%',
     borderRadius:25,

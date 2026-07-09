@@ -4,7 +4,7 @@ import React from 'react'
 export default function LogoUp() {
   return (
     <View style={styles.center}>
-      <Image source={require('./assets/logoUp.png')} style={styles.logo} resizeMode="contain">
+      <Image source={require('./assets/Logo.png')} style={styles.logo} resizeMode="contain">
       </Image>
     </View>
   )

@@ -53,7 +53,8 @@ const styles = StyleSheet.create({
     }
 })*/
 import React from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground} from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground}
+from 'react-native'
 import IniciarSesion from './IniciarSesion'
 
 export default function Jugar({ navigation }) {

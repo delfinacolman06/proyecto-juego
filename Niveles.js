@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
-import BotonJugar from './BotonJugar';
+/* import BotonJugar from './BotonJugar'; */
 import Nivel1 from './screen/Nivel1';
 import Nivel2 from './screen/Nivel2';
 import Nivel3 from './screen/Nivel3';

@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Button, TouchableOpacity, ImageBackground } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
-import Rankings from './Rankings';
 import Niveles from '../Niveles';
 
 const Stack = createStackNavigator();

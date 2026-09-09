@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import {View,Image, StyleSheet, Dimensions} from 'react-native';
+import { View, Image, StyleSheet, Dimensions } from 'react-native';
 
-const { width, height }= Dimensions.get('window');// toma en cuenta el tamaño de la pantalla
+const { width, height } = Dimensions.get('window');// toma en cuenta el tamaño de la pantalla
 
 const COLUMNAS = 3;
 const CANTIDAD_BLOQUES = 10;
@@ -14,59 +14,95 @@ const ALTO_BLOQUE = 30;
 
 // ELEGIR COLUMNA
 function columnaRandom() {
-    return Math.floor(Math.random()*COLUMNAS);
+    return Math.floor(Math.random() * COLUMNAS);
 }
 // POSICIÓN HORIZONTAL
 function obtenerX(columna) {
-    return columna*(width / 3) + 10; //divide la pantalla en 3 partes iguales y le suma 10 para que no quede pegado al borde
+    return columna * (width / 3) + 10; //divide la pantalla en 3 partes iguales y le suma 10 para que no quede pegado al borde
 }
 // CREAR BLOQUES
+/* function crearBloques() {
+
+    const bloques = [];
+
+    // Posibles formas de cada grupo
+    const patrones = [
+        [1, 0, 0],
+        [0, 1, 1],
+        [0, 0, 0],
+
+        [1, 1, 0],
+        [0, 0, 1],
+        [1, 0, 0],
+
+        [1, 0, 0],
+        [0, 0, 1],
+        [1, 1, 0],
+    ];
+
+    for (let i = 0; i < CANTIDAD_BLOQUES; i++) {
+
+        // Elegimos un patrón al azar
+        const patron =patrones[Math.floor(Math.random() * patrones.length)];
+        // Revisamos las 3 columnas
+        for (let columna = 0; columna < COLUMNAS; columna++) {
+            // Si el patrón tiene un bloque
+            if (patron[columna] === 1) {
+                bloques.push({
+                    id: i + "-" + columna,
+                    x: obtenerX(columna),
+                    y: -100 + (i * ESPACIO),});
+            }
+        }
+    }
+    return bloques;
+} */
 function crearBloques() {
     const bloques = [];
-    let columnaAnterior = -1;
-    for (let i = 0; i< CANTIDAD_BLOQUES; i++) {
-        let columna;
-        // Evitamos repetir la columna anterior
-        do {
-            columna = columnaRandom();
-        } while (columna === columnaAnterior);
-        columnaAnterior = columna;
+    for (let i = 0; i < CANTIDAD_BLOQUES; i++) {
+        const columna = columnaRandom();
         bloques.push({
-            id: i,
+            id: i.toString(),
             x: obtenerX(columna),
             y: -100 + (i * ESPACIO),
         });
     }
+
     return bloques;
 }
 // BUSCAR COLUMNA SEGURA
-function buscarColumnaSegura(bloques) {
-    // Miramos los bloques que están más arriba.
-    // No queremos poner el nuevo bloque
-    // en la misma columna que ellos.
-    const ultimos = bloques.slice().sort((a, b) => a.y - b.y).slice(0, 2);
+/* function buscarColumnaSegura(bloques) {
+    // Miramos los bloques que están más arriba
+    const ultimos = bloques
+        .slice()
+        .sort((a, b) => a.y - b.y)
+        .slice(0, 3);
+
     const columnasProhibidas = ultimos.map(bloque => {
         return Math.round(
             (bloque.x - 10) / (width / 3)
         );
     });
+
+    // Elegimos solamente columnas que no estén prohibidas
     const columnasDisponibles = [];
+
     for (let i = 0; i < COLUMNAS; i++) {
         if (!columnasProhibidas.includes(i)) {
             columnasDisponibles.push(i);
         }
     }
-    // Si por alguna razón no hay ninguna,
-    // elegimos cualquiera.
+
+    // Si todas están ocupadas/prohibidas,
+    // elegimos una columna completamente al azar
     if (columnasDisponibles.length === 0) {
         return columnaRandom();
     }
-    const posicion =
-        Math.floor(
-            Math.random() * columnasDisponibles.length
-        );
-    return columnasDisponibles[posicion];
-}
+
+    return columnasDisponibles[
+        Math.floor(Math.random() * columnasDisponibles.length)
+    ];
+} */
 // NIVEL 1
 export default function Nivel1() {
     const [bloques, setBloques] = useState(
@@ -83,54 +119,60 @@ export default function Nivel1() {
                     }));
 
                 // BLOQUES QUE SALIEROn
-                nuevosBloques.forEach((bloque, indice) => {
+                nuevosBloques.forEach((bloque) => {
+
                     if (bloque.y > height) {
-                        // Buscamos el bloque que está
-                        // más arriba actualmente.
-                        const masArriba =
-                            nuevosBloques.filter(b => b.id !== bloque.id).sort((a, b) => a.y - b.y)[0];
-                        // Lo ponemos por encima
-                        // dejando espacio.
-                        bloque.y=masArriba.y - ESPACIO;
-                        // Nueva columna segura
-                        const nuevaColumna =
-                            buscarColumnaSegura(
-                                nuevosBloques.filter(
-                                    b => b.id !== bloque.id
-                                )
-                            );
 
+                        // Buscamos el bloque que está más arriba
+                        const otrosBloques = nuevosBloques
+                            .filter(b => b.id !== bloque.id)
+                            .sort((a, b) => a.y - b.y);
 
-                        bloque.x =
-                            obtenerX(nuevaColumna);
+                        const masArriba = otrosBloques[0];
+
+                        // Lo colocamos arriba dejando espacio
+                        bloque.y = masArriba.y - ESPACIO;
+
+                        // Columna del bloque que está arriba
+                        const columnaArriba = Math.round(
+                            (masArriba.x - 10) / (width / 3)
+                        );
+
+                        // Elegimos una columna diferente
+                        let nuevaColumna = columnaRandom();
+
+                        while (nuevaColumna === columnaArriba) {
+                            nuevaColumna = columnaRandom();
+                        }
+                        bloque.x = obtenerX(nuevaColumna);
                     }
                 });
-                return nuevosBloques;
-            });
+            return nuevosBloques;
+        });
 
-        }, 16);
-        return () => { clearInterval(intervalo);};
-    }, []);
-    return (
-        <View style={styles.game}>
-            {/* COLUMNA 1 */}
-            <View style={styles.columna} />
-            {/* COLUMNA 2 */}
-            <View style={[ styles.columna,styles.columna2,]}/>
-            {/* COLUMNA 3 */}
-            <View style={[ styles.columna, styles.columna3,]}/>
-            {/* BLOQUES */}
-            {bloques.map(bloque => (
-                <View key={bloque.id} style={[ styles.bloque,{left: bloque.x,top: bloque.y,},]}/>
-            ))}
-            {/* ALIEN */}
-            <View style={styles.alien}>
-                <Image source={require('../assets/alien.png')} style={styles.alienImage} />
-            </View>
-            {/* BASE */}
-            <View style={styles.base} />
+    }, 16);
+    return () => { clearInterval(intervalo); };
+}, []);
+return (
+    <View style={styles.game}>
+        {/* COLUMNA 1 */}
+        <View style={styles.columna} />
+        {/* COLUMNA 2 */}
+        <View style={[styles.columna, styles.columna2,]} />
+        {/* COLUMNA 3 */}
+        <View style={[styles.columna, styles.columna3,]} />
+        {/* BLOQUES */}
+        {bloques.map(bloque => (
+            <View key={bloque.id} style={[styles.bloque, { left: bloque.x, top: bloque.y, },]} />
+        ))}
+        {/* ALIEN */}
+        <View style={styles.alien}>
+            <Image source={require('../assets/alien.png')} style={styles.alienImage} />
         </View>
-    );
+        {/* BASE */}
+        <View style={styles.base} />
+    </View>
+);
 }
 const styles = StyleSheet.create({
     game: {

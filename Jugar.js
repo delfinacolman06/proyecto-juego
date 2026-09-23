@@ -1,6 +1,5 @@
 import React from 'react'
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground}
-from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground} from 'react-native'
 import IniciarSesion from './IniciarSesion'
 import LogoUp from './LogoUp'
 

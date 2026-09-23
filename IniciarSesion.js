@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {View,Text,StyleSheet,TextInput,TouchableOpacity,ImageBackground}
 from 'react-native';
-import Registrarse from './Registrarse';
+//import Registrarse from './Registrarse';
 import Menu from './Menu';
 
 export default function IniciarSesion({ navigation }) {

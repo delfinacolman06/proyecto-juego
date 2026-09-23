@@ -65,7 +65,7 @@ export default function MyTab() {
                 resizeMode="cover"
             >
 
-                <Saludo />
+                <Saludo/>
                 <Tab.Navigator
                     screenOptions={{
                         sceneStyle: {

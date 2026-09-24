@@ -1,288 +1,611 @@
-import React, { useEffect, useRef } from 'react';
-import {View,Image,StyleSheet,Pressable,Text,Animated} from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import {View,Image,StyleSheet,Dimensions,Pressable,Text,Animated,} from 'react-native';
+
+const { width, height } = Dimensions.get('window');
+// ===============================
+// CONFIGURACIÓN DE BLOQUES
+// ===============================
+const COLUMNAS = 3;
+const CANTIDAD_BLOQUES = 10;
+
+const ESPACIO = 130;
+const VELOCIDAD_BLOQUES = 3;
+
+const ANCHO_BLOQUE = width / 3 - 20;
+const ALTO_BLOQUE = 30;
+// ===============================
+// CONFIGURACIÓN DEL ALIEN
+// ===============================
+
+const ANCHO_ALIEN = 70;
+const ALTO_ALIEN = 70;
+
+const VELOCIDAD_ALIEN = 6;
+const FUERZA_SALTO = 14;
+const GRAVEDAD = 0.7;
+
+// ===============================
+// ELEGIR COLUMNA
+// ===============================
+function columnaRandom() {
+    return Math.floor(Math.random() * COLUMNAS);
+}
+// ===============================
+// POSICIÓN HORIZONTAL
+// ===============================
+function obtenerX(columna) {
+    return columna * (width / 3) + 10;
+}
+// ===============================
+// CREAR BLOQUES
+// ===============================
+function crearBloques() {
+    const bloques = [];
+    for (let i = 0; i < CANTIDAD_BLOQUES; i++) {
+        const columna = columnaRandom();
+
+        bloques.push({
+            id: i.toString(),
+            x: obtenerX(columna),
+            y: -100 + i * ESPACIO,
+        });
+    }
+
+    return bloques;
+}
+
+// ===============================
+// NIVEL
+// ===============================
 
 export default function Nivel1() {
 
-    // POSICIÓN DEL ALIEN
-    const x = useRef(50);
-    const y = useRef(180);
+    // -------------------------------
+    // BLOQUES
+    // -------------------------------
 
-    // VELOCIDAD
+    const [bloques, setBloques] = useState(
+        crearBloques()
+    );
+
+    // -------------------------------
+    // POSICIÓN DEL ALIEN
+    // -------------------------------
+
+    const alienX = useRef(width / 2 - ANCHO_ALIEN / 2);
+    const alienY = useRef(height - 170);
+
+    // Velocidad horizontal
     const velocidadX = useRef(0);
+
+    // Velocidad vertical
     const velocidadY = useRef(0);
 
-    // SABER SI ESTÁ APOYADO
-    const enElSuelo = useRef(true);
+    // Saber si está apoyado
+    const enElSuelo = useRef(false);
 
-    // ANIMACIÓN
-    const alienX = useRef(new Animated.Value(50)).current;
-    const alienY = useRef(new Animated.Value(180)).current;
+    // Saber si está sobre un bloque
+    const sobreBloque = useRef(false);
 
-    // CONFIGURACIÓN
-    const VELOCIDAD = 6;
-    const SALTO = 14;
-    const GRAVEDAD = 0.7;
+    // -------------------------------
+    // ANIMATED VALUES
+    // -------------------------------
 
-    // POSICIÓN DEL SUELO
-    const SUELO = 180;
+    const alienAnimatedX =
+        useRef(
+            new Animated.Value(
+                width / 2 - ANCHO_ALIEN / 2
+            )
+        ).current;
 
-    // DATOS DEL BLOQUE
-    const bloque = {
-        x: 50,
-        y: 130,
-        ancho: 200,
-        alto: 30
-    };
+    const alienAnimatedY =
+        useRef(
+            new Animated.Value(
+                height - 170
+            )
+        ).current;
+
+    // -------------------------------
+    // REFERENCIA DE BLOQUES
+    // -------------------------------
+
+    const bloquesRef = useRef([]);
+
+    useEffect(() => {
+        bloquesRef.current = bloques;
+    }, [bloques]);
+
+    // ===============================
+    // MOVIMIENTO DEL ALIEN
+    // ===============================
 
     useEffect(() => {
 
+        let animacion;
+
         const actualizar = () => {
 
-            // =========================
+            // ---------------------------
             // MOVIMIENTO HORIZONTAL
-            // =========================
+            // ---------------------------
 
-            x.current += velocidadX.current;
+            alienX.current += velocidadX.current;
 
+            // Evitar que salga por los bordes
 
-            // =========================
-            // GRAVEDAD Y MOVIMIENTO VERTICAL
-            // =========================
+            if (alienX.current < 0) {
+                alienX.current = 0;
+            }
+
+            if (
+                alienX.current >
+                width - ANCHO_ALIEN
+            ) {
+                alienX.current =
+                    width - ANCHO_ALIEN;
+            }
+
+            // ---------------------------
+            // GRAVEDAD
+            // ---------------------------
 
             if (!enElSuelo.current) {
 
                 velocidadY.current -= GRAVEDAD;
 
-                y.current += velocidadY.current;
+                alienY.current +=
+                    velocidadY.current;
+            }
 
+            // ---------------------------
+            // COLISIÓN CON BLOQUES
+            // ---------------------------
 
-                // =========================
-                // COLISIÓN CON EL BLOQUE
-                // =========================
+            let aterrizoEnBloque = false;
 
-                const alienIzquierda = x.current;
-                const alienDerecha = x.current + 70;
+            const alienIzquierda =
+                alienX.current;
 
-                const bloqueIzquierda = bloque.x;
-                const bloqueDerecha =
-                    bloque.x + bloque.ancho;
+            const alienDerecha =
+                alienX.current + ANCHO_ALIEN;
 
-                const alienAbajo = y.current;
+            const alienAbajo =
+                alienY.current;
 
-                const bloqueArriba =
-                    bloque.y + bloque.alto;
+            const alienArriba =
+                alienY.current + ALTO_ALIEN;
 
+            bloquesRef.current.forEach(
+                bloque => {
+
+                    const bloqueIzquierda =
+                        bloque.x;
+
+                    const bloqueDerecha =
+                        bloque.x +
+                        ANCHO_BLOQUE;
+
+                    const bloqueArriba =
+                        height -
+                        bloque.y;
+
+                    const bloqueAbajo =
+                        bloqueArriba -
+                        ALTO_BLOQUE;
+
+                    // --------------------------------
+                    // COMPROBAR SI ESTÁ HORIZONTALMENTE
+                    // SOBRE EL BLOQUE
+                    // --------------------------------
+
+                    const hayColisionHorizontal =
+                        alienDerecha >
+                        bloqueIzquierda &&
+                        alienIzquierda <
+                        bloqueDerecha;
+
+                    // --------------------------------
+                    // EL ALIEN ESTÁ CAYENDO
+                    // --------------------------------
+
+                    const estaCayendo =
+                        velocidadY.current <= 0;
+
+                    // --------------------------------
+                    // COLISIÓN DESDE ARRIBA
+                    // --------------------------------
+
+                    if (
+                        hayColisionHorizontal &&
+                        estaCayendo &&
+                        alienAbajo <= bloqueArriba &&
+                        alienAbajo >= bloqueArriba - 25
+                    ) {
+
+                        alienY.current =
+                            bloqueArriba;
+
+                        velocidadY.current = 0;
+
+                        enElSuelo.current = true;
+
+                        sobreBloque.current = true;
+
+                        aterrizoEnBloque = true;
+                    }
+                }
+            );
+
+            // ---------------------------
+            // SI NO ESTÁ SOBRE BLOQUE
+            // ---------------------------
+
+            if (!aterrizoEnBloque) {
 
                 if (
-                    alienDerecha > bloqueIzquierda &&
-                    alienIzquierda < bloqueDerecha &&
-                    alienAbajo <= bloqueArriba &&
-                    alienAbajo >= bloque.y &&
-                    velocidadY.current <= 0
+                    alienY.current <=
+                    100
                 ) {
 
-                    // El alien queda arriba del bloque
-                    y.current = bloqueArriba;
-
-                    // Detenemos la caída
-                    velocidadY.current = 0;
-
-                    // Ahora está apoyado
-                    enElSuelo.current = true;
-                }
-
-
-                // =========================
-                // COLISIÓN CON EL SUELO
-                // =========================
-
-                if (y.current <= SUELO) {
-
-                    y.current = SUELO;
+                    alienY.current = 100;
 
                     velocidadY.current = 0;
 
                     enElSuelo.current = true;
+
+                    sobreBloque.current = false;
+
+                } else {
+
+                    enElSuelo.current = false;
+
+                    sobreBloque.current = false;
                 }
             }
 
+            // ---------------------------
+            // ACTUALIZAR ANIMACIÓN
+            // ---------------------------
 
-            // =========================
-            // ACTUALIZAR ALIEN
-            // =========================
+            alienAnimatedX.setValue(
+                alienX.current
+            );
 
-            alienX.setValue(x.current);
-            alienY.setValue(y.current);
+            alienAnimatedY.setValue(
+                alienY.current
+            );
 
-
-            // VOLVER A EJECUTAR
-            requestAnimationFrame(actualizar);
+            animacion =
+                requestAnimationFrame(
+                    actualizar
+                );
         };
 
+        animacion =
+            requestAnimationFrame(
+                actualizar
+            );
 
-        const animacion =
-            requestAnimationFrame(actualizar);
-
-
-        return () => cancelAnimationFrame(animacion);
+        return () => {
+            cancelAnimationFrame(animacion);
+        };
 
     }, []);
 
+    // ===============================
+    // MOVIMIENTO DE BLOQUES
+    // ===============================
 
-    // =========================
-    // MOVIMIENTO IZQUIERDA
-    // =========================
+    useEffect(() => {
+
+        const intervalo =
+            setInterval(() => {
+
+                setBloques(
+                    bloquesActuales => {
+
+                        const nuevosBloques =
+                            bloquesActuales.map(
+                                bloque => ({
+                                    ...bloque,
+                                    y:
+                                        bloque.y +
+                                        VELOCIDAD_BLOQUES,
+                                })
+                            );
+
+                        // ---------------------------
+                        // RECICLAR BLOQUES
+                        // ---------------------------
+
+                        nuevosBloques.forEach(
+                            bloque => {
+
+                                if (
+                                    bloque.y >
+                                    height
+                                ) {
+
+                                    // Buscar bloque más arriba
+
+                                    const otrosBloques =
+                                        nuevosBloques
+                                            .filter(
+                                                b =>
+                                                    b.id !==
+                                                    bloque.id
+                                            )
+                                            .sort(
+                                                (a, b) =>
+                                                    a.y -
+                                                    b.y
+                                            );
+
+                                    const masArriba =
+                                        otrosBloques[0];
+
+                                    if (masArriba) {
+
+                                        // Colocarlo arriba
+
+                                        bloque.y =
+                                            masArriba.y -
+                                            ESPACIO;
+
+                                        // Columna del bloque superior
+
+                                        const columnaArriba =
+                                            Math.round(
+                                                (
+                                                    masArriba.x -
+                                                    10
+                                                ) /
+                                                (width / 3)
+                                            );
+
+                                        // Elegir columna diferente
+
+                                        let nuevaColumna =
+                                            columnaRandom();
+
+                                        while (
+                                            nuevaColumna ===
+                                            columnaArriba
+                                        ) {
+
+                                            nuevaColumna =
+                                                columnaRandom();
+                                        }
+
+                                        bloque.x =
+                                            obtenerX(
+                                                nuevaColumna
+                                            );
+                                    }
+                                }
+                            }
+                        );
+
+                        return nuevosBloques;
+                    }
+                );
+
+            }, 16);
+
+        return () => {
+            clearInterval(intervalo);
+        };
+
+    }, []);
+
+    // ===============================
+    // CONTROLES
+    // ===============================
 
     const izquierda = () => {
-        velocidadX.current = -VELOCIDAD;
+
+        velocidadX.current =
+            -VELOCIDAD_ALIEN;
     };
-
-
-    // =========================
-    // MOVIMIENTO DERECHA
-    // =========================
 
     const derecha = () => {
-        velocidadX.current = VELOCIDAD;
+
+        velocidadX.current =
+            VELOCIDAD_ALIEN;
     };
-
-
-    // =========================
-    // DETENER MOVIMIENTO
-    // =========================
 
     const detener = () => {
+
         velocidadX.current = 0;
     };
-
-
-    // =========================
-    // SALTAR
-    // =========================
 
     const saltar = () => {
 
         if (enElSuelo.current) {
 
-            velocidadY.current = SALTO;
+            velocidadY.current =
+                FUERZA_SALTO;
 
             enElSuelo.current = false;
+
+            sobreBloque.current = false;
         }
     };
 
+    // ===============================
+    // PANTALLA
+    // ===============================
 
     return (
 
         <View style={styles.game}>
 
-            {/* =========================
+            {/* ==========================
+                COLUMNA 1
+            =========================== */}
+
+            <View
+                style={styles.columna}
+            />
+
+            {/* ==========================
+                COLUMNA 2
+            =========================== */}
+
+            <View
+                style={[
+                    styles.columna,
+                    styles.columna2,
+                ]}
+            />
+
+            {/* ==========================
+                COLUMNA 3
+            =========================== */}
+
+            <View
+                style={[
+                    styles.columna,
+                    styles.columna3,
+                ]}
+            />
+
+            {/* ==========================
+                BLOQUES
+            =========================== */}
+
+            {bloques.map(
+                bloque => (
+
+                    <View
+                        key={bloque.id}
+                        style={[
+                            styles.bloque,
+                            {
+                                left:
+                                    bloque.x,
+
+                                top:
+                                    bloque.y,
+                            },
+                        ]}
+                    />
+                )
+            )}
+
+            {/* ==========================
                 ALIEN
-            ========================= */}
+            =========================== */}
 
             <Animated.View
                 style={[
                     styles.alien,
                     {
-                        left: alienX,
-                        bottom: alienY
-                    }
+                        left:
+                            alienAnimatedX,
+
+                        bottom:
+                            alienAnimatedY,
+                    },
                 ]}
             >
 
                 <Image
-                    source={require('../assets/alien.png')}
-                    style={styles.alienImage}
+                    source={require(
+                        '../assets/alien.png'
+                    )}
+                    style={
+                        styles.alienImage
+                    }
                 />
 
             </Animated.View>
 
+            {/* ==========================
+                BASE
+            =========================== */}
 
-            {/* =========================
-                BLOQUE
-            ========================= */}
+            <View
+                style={styles.base}
+            />
 
-            <View style={styles.bloque}>
-
-                <Image
-                    source={require('../assets/bloque.avif')}
-                    style={styles.bloqueImage}
-                />
-
-            </View>
-
-
-            {/* =========================
-                BOTÓN SALTAR IZQUIERDO
-            ========================= */}
+            {/* ==========================
+                BOTÓN SALTO IZQUIERDO
+            =========================== */}
 
             <Pressable
                 style={[
                     styles.boton,
-                    styles.saltoIzquierdo
+                    styles.saltoIzquierdo,
                 ]}
                 onPress={saltar}
             >
 
-                <Text style={styles.texto}>
+                <Text
+                    style={styles.texto}
+                >
                     ↑
                 </Text>
 
             </Pressable>
 
-
-            {/* =========================
-                BOTÓN SALTAR DERECHO
-            ========================= */}
+            {/* ==========================
+                BOTÓN SALTO DERECHO
+            =========================== */}
 
             <Pressable
                 style={[
                     styles.boton,
-                    styles.saltoDerecho
+                    styles.saltoDerecho,
                 ]}
                 onPress={saltar}
             >
 
-                <Text style={styles.texto}>
+                <Text
+                    style={styles.texto}
+                >
                     ↑
                 </Text>
 
             </Pressable>
 
-
-            {/* =========================
-                BOTÓN IZQUIERDA
-            ========================= */}
+            {/* ==========================
+                IZQUIERDA
+            =========================== */}
 
             <Pressable
                 style={[
                     styles.boton,
-                    styles.izquierda
+                    styles.izquierda,
                 ]}
                 onPressIn={izquierda}
                 onPressOut={detener}
             >
 
-                <Text style={styles.texto}>
+                <Text
+                    style={styles.texto}
+                >
                     ←
                 </Text>
 
             </Pressable>
 
-
-            {/* =========================
-                BOTÓN DERECHA
-            ========================= */}
+            {/* ==========================
+                DERECHA
+            =========================== */}
 
             <Pressable
                 style={[
                     styles.boton,
-                    styles.derecha
+                    styles.derecha,
                 ]}
                 onPressIn={derecha}
                 onPressOut={detener}
             >
 
-                <Text style={styles.texto}>
+                <Text
+                    style={styles.texto}
+                >
                     →
                 </Text>
 
@@ -292,10 +615,9 @@ export default function Nivel1() {
     );
 }
 
-
-// =========================
+// ===============================
 // ESTILOS
-// =========================
+// ===============================
 
 const styles = StyleSheet.create({
 
@@ -305,42 +627,87 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
     },
 
+    // -------------------------------
+    // COLUMNAS
+    // -------------------------------
 
+    columna: {
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        bottom: 0,
+        width: width / 3,
+        backgroundColor: '#e83b91',
+    },
+
+    columna2: {
+        left: width / 3,
+        backgroundColor: '#102d72',
+    },
+
+    columna3: {
+        left:
+            (width / 3) * 2,
+        backgroundColor: '#e83b91',
+    },
+
+    // -------------------------------
+    // BLOQUES
+    // -------------------------------
+
+    bloque: {
+        position: 'absolute',
+        width: ANCHO_BLOQUE,
+        height: ALTO_BLOQUE,
+        backgroundColor: '#ffd447',
+        borderRadius: 5,
+    },
+
+    // -------------------------------
     // ALIEN
+    // -------------------------------
+
     alien: {
         position: 'absolute',
     },
 
     alienImage: {
-        width: 70,
-        height: 70,
+        width: ANCHO_ALIEN,
+        height: ALTO_ALIEN,
         resizeMode: 'contain',
     },
 
+    // -------------------------------
+    // BASE
+    // -------------------------------
 
-    // BLOQUE
-    bloque: {
+    base: {
         position: 'absolute',
-        bottom: 130,
-        left: 50,
-        width: 200,
-        height: 30,
+        bottom: 0,
+        left: 0,
+        width: width,
+        height: 70,
+        backgroundColor: '#8b4512',
+
+        borderTopWidth: 8,
+        borderTopColor: '#4caf50',
+
+        // IMPORTANTE:
+        // La base NO participa de las colisiones.
     },
 
-    bloqueImage: {
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'red',
-    },
-
-
+    // -------------------------------
     // BOTONES
+    // -------------------------------
+
     boton: {
         position: 'absolute',
         width: 65,
         height: 65,
         borderRadius: 35,
+
         backgroundColor: '#444',
+
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -350,30 +717,38 @@ const styles = StyleSheet.create({
         fontSize: 35,
     },
 
-
+    // -------------------------------
     // IZQUIERDA
+    // -------------------------------
+
     izquierda: {
         left: 25,
         bottom: 45,
     },
 
-
+    // -------------------------------
     // DERECHA
+    // -------------------------------
+
     derecha: {
         right: 25,
         bottom: 45,
     },
 
-
+    // -------------------------------
     // SALTO IZQUIERDO
+    // -------------------------------
+
     saltoIzquierdo: {
         left: 25,
         bottom: 125,
         backgroundColor: '#28a745',
     },
 
-
+    // -------------------------------
     // SALTO DERECHO
+    // -------------------------------
+
     saltoDerecho: {
         right: 25,
         bottom: 125,

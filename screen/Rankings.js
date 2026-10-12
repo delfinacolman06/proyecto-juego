@@ -95,7 +95,7 @@ export default function Rankings() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+       backgroundColor: 'transparent',
   },
 
   scrollContent: {
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   },
 
   title: {
-    color: '#005397',
+    color: '#f9f9f9',
     fontSize: 35,
     fontWeight: '900',
     letterSpacing: 0.3,

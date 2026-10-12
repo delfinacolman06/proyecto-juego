@@ -11,9 +11,9 @@ import {
 
 const { width, height } = Dimensions.get('window');
 
-// ===============================
-// CONFIGURACIÓN DE BLOQUES
-// ===============================
+// ==========================================
+// CONFIGURACIÓN
+// ==========================================
 
 const COLUMNAS = 3;
 const CANTIDAD_BLOQUES = 10;
@@ -24,9 +24,9 @@ const VELOCIDAD_BLOQUES = 3;
 const ANCHO_BLOQUE = width / 3 - 20;
 const ALTO_BLOQUE = 30;
 
-// ===============================
-// CONFIGURACIÓN DEL ALIEN
-// ===============================
+// ==========================================
+// ALIEN
+// ==========================================
 
 const ANCHO_ALIEN = 70;
 const ALTO_ALIEN = 70;
@@ -35,25 +35,21 @@ const VELOCIDAD_ALIEN = 6;
 const FUERZA_SALTO = 14;
 const GRAVEDAD = 0.7;
 
-// ===============================
-// ELEGIR COLUMNA
-// ===============================
+// ==========================================
+// COLUMNAS
+// ==========================================
 
 function columnaRandom() {
     return Math.floor(Math.random() * COLUMNAS);
 }
 
-// ===============================
-// POSICIÓN HORIZONTAL
-// ===============================
-
 function obtenerX(columna) {
     return columna * (width / 3) + 10;
 }
 
-// ===============================
+// ==========================================
 // CREAR BLOQUES
-// ===============================
+// ==========================================
 
 function crearBloques() {
     const bloques = [];
@@ -71,84 +67,84 @@ function crearBloques() {
     return bloques;
 }
 
-// ===============================
+// ==========================================
 // NIVEL
-// ===============================
+// ==========================================
 
 export default function Nivel1() {
 
-    // -------------------------------
+    // ======================================
     // BLOQUES
-    // -------------------------------
+    // ======================================
 
     const [bloques, setBloques] = useState(
         crearBloques()
     );
 
-    // -------------------------------
-    // POSICIÓN DEL ALIEN
-    // -------------------------------
-
-    const alienX = useRef(width / 2 - ANCHO_ALIEN / 2);
-    const alienY = useRef(height - 170);
-
-    // Velocidad horizontal
-    const velocidadX = useRef(0);
-
-    // Velocidad vertical
-    const velocidadY = useRef(0);
-
-    // Saber si está apoyado
-    const enElSuelo = useRef(false);
-
-    // Saber si está sobre un bloque
-    const sobreBloque = useRef(false);
-
-    // -------------------------------
-    // ANIMATED VALUES
-    // -------------------------------
-
-    const alienAnimatedX =
-        useRef(
-            new Animated.Value(
-                width / 2 - ANCHO_ALIEN / 2
-            )
-        ).current;
-
-    const alienAnimatedY =
-        useRef(
-            new Animated.Value(
-                height - 170
-            )
-        ).current;
-
-    // -------------------------------
-    // REFERENCIA DE BLOQUES
-    // -------------------------------
-
-    const bloquesRef = useRef([]);
+    const bloquesRef = useRef(bloques);
 
     useEffect(() => {
         bloquesRef.current = bloques;
     }, [bloques]);
 
-    // ===============================
-    // MOVIMIENTO DEL ALIEN
-    // ===============================
+    // ======================================
+    // POSICIÓN DEL ALIEN
+    // TODO EN "TOP"
+    // ======================================
+
+    const alienX = useRef(
+        width / 2 - ANCHO_ALIEN / 2
+    );
+
+    const alienY = useRef(
+        height - 170
+    );
+
+    // ======================================
+    // VELOCIDADES
+    // ======================================
+
+    const velocidadX = useRef(0);
+    const velocidadY = useRef(0);
+
+    // ======================================
+    // ESTADO DEL ALIEN
+    // ======================================
+
+    const enElSuelo = useRef(false);
+    const sobreBloque = useRef(false);
+
+    // ======================================
+    // ANIMACIONES
+    // ======================================
+
+    const alienAnimatedX = useRef(
+        new Animated.Value(
+            width / 2 - ANCHO_ALIEN / 2
+        )
+    ).current;
+
+    const alienAnimatedY = useRef(
+        new Animated.Value(
+            height - 170
+        )
+    ).current;
+
+    // ======================================
+    // FÍSICA DEL ALIEN
+    // ======================================
 
     useEffect(() => {
 
-        let animacion;
+        let frame;
 
         const actualizar = () => {
 
-            // ---------------------------
+            // ==================================
             // MOVIMIENTO HORIZONTAL
-            // ---------------------------
+            // ==================================
 
             alienX.current += velocidadX.current;
-
-            // Evitar que salga por los bordes
 
             if (alienX.current < 0) {
                 alienX.current = 0;
@@ -162,35 +158,48 @@ export default function Nivel1() {
                     width - ANCHO_ALIEN;
             }
 
-            // ---------------------------
+            // ==================================
+            // POSICIÓN ANTERIOR
+            // ==================================
+
+            const alienYAnterior =
+                alienY.current;
+
+            // ==================================
             // GRAVEDAD
-            // ---------------------------
+            // ==================================
 
             if (!enElSuelo.current) {
 
-                velocidadY.current -= GRAVEDAD;
+                velocidadY.current += GRAVEDAD;
 
                 alienY.current +=
                     velocidadY.current;
             }
 
-            // ---------------------------
-            // COLISIÓN CON BLOQUES
-            // ---------------------------
-
-            let aterrizoEnBloque = false;
+            // ==================================
+            // DATOS DEL ALIEN
+            // ==================================
 
             const alienIzquierda =
                 alienX.current;
 
             const alienDerecha =
-                alienX.current + ANCHO_ALIEN;
-
-            const alienAbajo =
-                alienY.current;
+                alienX.current +
+                ANCHO_ALIEN;
 
             const alienArriba =
-                alienY.current + ALTO_ALIEN;
+                alienY.current;
+
+            const alienAbajo =
+                alienY.current +
+                ALTO_ALIEN;
+
+            // ==================================
+            // COLISIÓN
+            // ==================================
+
+            let aterrizo = false;
 
             bloquesRef.current.forEach(
                 bloque => {
@@ -203,44 +212,52 @@ export default function Nivel1() {
                         ANCHO_BLOQUE;
 
                     const bloqueArriba =
-                        height -
                         bloque.y;
 
-                    const bloqueAbajo =
-                        bloqueArriba -
-                        ALTO_BLOQUE;
-
                     // --------------------------------
-                    // COMPROBAR SI ESTÁ HORIZONTALMENTE
-                    // SOBRE EL BLOQUE
+                    // COLISIÓN HORIZONTAL
                     // --------------------------------
 
-                    const hayColisionHorizontal =
+                    const tocaHorizontalmente =
                         alienDerecha >
-                        bloqueIzquierda &&
+                            bloqueIzquierda &&
                         alienIzquierda <
-                        bloqueDerecha;
+                            bloqueDerecha;
 
                     // --------------------------------
-                    // EL ALIEN ESTÁ CAYENDO
+                    // ALIEN ESTÁ CAYENDO
                     // --------------------------------
 
                     const estaCayendo =
-                        velocidadY.current <= 0;
+                        velocidadY.current >= 0;
 
                     // --------------------------------
-                    // COLISIÓN DESDE ARRIBA
+                    // EL ALIEN ATRAVESÓ LA SUPERFICIE
+                    // --------------------------------
+
+                    const cruzoElBloque =
+                        alienYAnterior +
+                            ALTO_ALIEN <=
+                            bloqueArriba &&
+                        alienAbajo >=
+                            bloqueArriba;
+
+                    // --------------------------------
+                    // COLISIÓN FINAL
                     // --------------------------------
 
                     if (
-                        hayColisionHorizontal &&
+                        tocaHorizontalmente &&
                         estaCayendo &&
-                        alienAbajo <= bloqueArriba &&
-                        alienAbajo >= bloqueArriba - 25
+                        cruzoElBloque
                     ) {
 
+                        // Poner los pies exactamente
+                        // encima del bloque
+
                         alienY.current =
-                            bloqueArriba;
+                            bloqueArriba -
+                            ALTO_ALIEN;
 
                         velocidadY.current = 0;
 
@@ -248,23 +265,30 @@ export default function Nivel1() {
 
                         sobreBloque.current = true;
 
-                        aterrizoEnBloque = true;
+                        aterrizo = true;
                     }
                 }
             );
 
-            // ---------------------------
-            // SI NO ESTÁ SOBRE BLOQUE
-            // ---------------------------
+            // ==================================
+            // SI NO ATERRIZÓ EN UN BLOQUE
+            // ==================================
 
-            if (!aterrizoEnBloque) {
+            if (!aterrizo) {
+
+                // --------------------------------
+                // SUELO
+                // --------------------------------
+
+                const sueloY =
+                    height - 70 - ALTO_ALIEN;
 
                 if (
-                    alienY.current <=
-                    100
+                    alienY.current >=
+                    sueloY
                 ) {
 
-                    alienY.current = 100;
+                    alienY.current = sueloY;
 
                     velocidadY.current = 0;
 
@@ -280,9 +304,9 @@ export default function Nivel1() {
                 }
             }
 
-            // ---------------------------
+            // ==================================
             // ACTUALIZAR ANIMACIÓN
-            // ---------------------------
+            // ==================================
 
             alienAnimatedX.setValue(
                 alienX.current
@@ -292,122 +316,125 @@ export default function Nivel1() {
                 alienY.current
             );
 
-            animacion =
+            frame =
                 requestAnimationFrame(
                     actualizar
                 );
         };
 
-        animacion =
+        frame =
             requestAnimationFrame(
                 actualizar
             );
 
         return () => {
-            cancelAnimationFrame(animacion);
+            cancelAnimationFrame(frame);
         };
 
     }, []);
 
-    // ===============================
+    // ==========================================
     // MOVIMIENTO DE BLOQUES
-    // ===============================
+    // ==========================================
 
     useEffect(() => {
 
-        const intervalo =
-            setInterval(() => {
+        const intervalo = setInterval(() => {
 
-                setBloques(
-                    bloquesActuales => {
+            setBloques(
+                bloquesActuales => {
 
-                        const nuevosBloques =
-                            bloquesActuales.map(
-                                bloque => ({
-                                    ...bloque,
-                                    y:
-                                        bloque.y +
-                                        VELOCIDAD_BLOQUES,
-                                })
-                            );
-
-                        // ---------------------------
-                        // RECICLAR BLOQUES
-                        // ---------------------------
-
-                        nuevosBloques.forEach(
-                            bloque => {
-
-                                if (
-                                    bloque.y >
-                                    height
-                                ) {
-
-                                    // Buscar bloque más arriba
-
-                                    const otrosBloques =
-                                        nuevosBloques
-                                            .filter(
-                                                b =>
-                                                    b.id !==
-                                                    bloque.id
-                                            )
-                                            .sort(
-                                                (a, b) =>
-                                                    a.y -
-                                                    b.y
-                                            );
-
-                                    const masArriba =
-                                        otrosBloques[0];
-
-                                    if (masArriba) {
-
-                                        // Colocarlo arriba
-
-                                        bloque.y =
-                                            masArriba.y -
-                                            ESPACIO;
-
-                                        // Columna del bloque superior
-
-                                        const columnaArriba =
-                                            Math.round(
-                                                (
-                                                    masArriba.x -
-                                                    10
-                                                ) /
-                                                (width / 3)
-                                            );
-
-                                        // Elegir columna diferente
-
-                                        let nuevaColumna =
-                                            columnaRandom();
-
-                                        while (
-                                            nuevaColumna ===
-                                            columnaArriba
-                                        ) {
-
-                                            nuevaColumna =
-                                                columnaRandom();
-                                        }
-
-                                        bloque.x =
-                                            obtenerX(
-                                                nuevaColumna
-                                            );
-                                    }
-                                }
-                            }
+                    const nuevosBloques =
+                        bloquesActuales.map(
+                            bloque => ({
+                                ...bloque,
+                                y:
+                                    bloque.y +
+                                    VELOCIDAD_BLOQUES,
+                            })
                         );
 
-                        return nuevosBloques;
-                    }
-                );
+                    // ==================================
+                    // RECICLAR BLOQUES
+                    // ==================================
 
-            }, 16);
+                    nuevosBloques.forEach(
+                        bloque => {
+
+                            if (
+                                bloque.y >
+                                height
+                            ) {
+
+                                const otros =
+                                    nuevosBloques
+                                        .filter(
+                                            b =>
+                                                b.id !==
+                                                bloque.id
+                                        )
+                                        .sort(
+                                            (a, b) =>
+                                                a.y -
+                                                b.y
+                                        );
+
+                                const masArriba =
+                                    otros[0];
+
+                                if (masArriba) {
+
+                                    bloque.y =
+                                        masArriba.y -
+                                        ESPACIO;
+
+                                    const columnaArriba =
+                                        Math.round(
+                                            (
+                                                masArriba.x -
+                                                10
+                                            ) /
+                                            (width / 3)
+                                        );
+
+                                    let nuevaColumna =
+                                        columnaRandom();
+
+                                    // Evitar que dos bloques
+                                    // consecutivos estén
+                                    // en la misma columna.
+
+                                    let intentos = 0;
+
+                                    while (
+                                        nuevaColumna ===
+                                            columnaArriba &&
+                                        intentos < 10
+                                    ) {
+
+                                        nuevaColumna =
+                                            columnaRandom();
+
+                                        intentos++;
+                                    }
+
+                                    bloque.x =
+                                        obtenerX(
+                                            nuevaColumna
+                                        );
+                                }
+                            }
+                        }
+                    );
+
+                    bloquesRef.current =
+                        nuevosBloques;
+
+                    return nuevosBloques;
+                }
+            );
+
+        }, 16);
 
         return () => {
             clearInterval(intervalo);
@@ -415,24 +442,21 @@ export default function Nivel1() {
 
     }, []);
 
-    // ===============================
+    // ==========================================
     // CONTROLES
-    // ===============================
+    // ==========================================
 
     const izquierda = () => {
-
         velocidadX.current =
             -VELOCIDAD_ALIEN;
     };
 
     const derecha = () => {
-
         velocidadX.current =
             VELOCIDAD_ALIEN;
     };
 
     const detener = () => {
-
         velocidadX.current = 0;
     };
 
@@ -441,7 +465,7 @@ export default function Nivel1() {
         if (enElSuelo.current) {
 
             velocidadY.current =
-                FUERZA_SALTO;
+                -FUERZA_SALTO;
 
             enElSuelo.current = false;
 
@@ -449,25 +473,20 @@ export default function Nivel1() {
         }
     };
 
-    // ===============================
+    // ==========================================
     // PANTALLA
-    // ===============================
+    // ==========================================
 
     return (
-
         <View style={styles.game}>
 
-            {/* ==========================
-                COLUMNA 1
-            =========================== */}
+            {/* ==================================
+                COLUMNAS
+            ================================== */}
 
             <View
                 style={styles.columna}
             />
-
-            {/* ==========================
-                COLUMNA 2
-            =========================== */}
 
             <View
                 style={[
@@ -476,10 +495,6 @@ export default function Nivel1() {
                 ]}
             />
 
-            {/* ==========================
-                COLUMNA 3
-            =========================== */}
-
             <View
                 style={[
                     styles.columna,
@@ -487,32 +502,28 @@ export default function Nivel1() {
                 ]}
             />
 
-            {/* ==========================
+            {/* ==================================
                 BLOQUES
-            =========================== */}
+            ================================== */}
 
-            {bloques.map(
-                bloque => (
+            {bloques.map(bloque => (
 
-                    <View
-                        key={bloque.id}
-                        style={[
-                            styles.bloque,
-                            {
-                                left:
-                                    bloque.x,
+                <View
+                    key={bloque.id}
+                    style={[
+                        styles.bloque,
+                        {
+                            left: bloque.x,
+                            top: bloque.y,
+                        },
+                    ]}
+                />
 
-                                top:
-                                    bloque.y,
-                            },
-                        ]}
-                    />
-                )
-            )}
+            ))}
 
-            {/* ==========================
+            {/* ==================================
                 ALIEN
-            =========================== */}
+            ================================== */}
 
             <Animated.View
                 style={[
@@ -520,8 +531,7 @@ export default function Nivel1() {
                     {
                         left:
                             alienAnimatedX,
-
-                        bottom:
+                        top:
                             alienAnimatedY,
                     },
                 ]}
@@ -538,17 +548,17 @@ export default function Nivel1() {
 
             </Animated.View>
 
-            {/* ==========================
+            {/* ==================================
                 BASE
-            =========================== */}
+            ================================== */}
 
             <View
                 style={styles.base}
             />
 
-            {/* ==========================
-                BOTÓN SALTO IZQUIERDO
-            =========================== */}
+            {/* ==================================
+                SALTO IZQUIERDO
+            ================================== */}
 
             <Pressable
                 style={[
@@ -557,18 +567,14 @@ export default function Nivel1() {
                 ]}
                 onPress={saltar}
             >
-
-                <Text
-                    style={styles.texto}
-                >
+                <Text style={styles.texto}>
                     ↑
                 </Text>
-
             </Pressable>
 
-            {/* ==========================
-                BOTÓN SALTO DERECHO
-            =========================== */}
+            {/* ==================================
+                SALTO DERECHO
+            ================================== */}
 
             <Pressable
                 style={[
@@ -577,18 +583,14 @@ export default function Nivel1() {
                 ]}
                 onPress={saltar}
             >
-
-                <Text
-                    style={styles.texto}
-                >
+                <Text style={styles.texto}>
                     ↑
                 </Text>
-
             </Pressable>
 
-            {/* ==========================
+            {/* ==================================
                 IZQUIERDA
-            =========================== */}
+            ================================== */}
 
             <Pressable
                 style={[
@@ -598,18 +600,14 @@ export default function Nivel1() {
                 onPressIn={izquierda}
                 onPressOut={detener}
             >
-
-                <Text
-                    style={styles.texto}
-                >
+                <Text style={styles.texto}>
                     ←
                 </Text>
-
             </Pressable>
 
-            {/* ==========================
+            {/* ==================================
                 DERECHA
-            =========================== */}
+            ================================== */}
 
             <Pressable
                 style={[
@@ -619,22 +617,18 @@ export default function Nivel1() {
                 onPressIn={derecha}
                 onPressOut={detener}
             >
-
-                <Text
-                    style={styles.texto}
-                >
+                <Text style={styles.texto}>
                     →
                 </Text>
-
             </Pressable>
 
         </View>
     );
 }
 
-// ===============================
+// ==========================================
 // ESTILOS
-// ===============================
+// ==========================================
 
 const styles = StyleSheet.create({
 
@@ -644,9 +638,9 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
     },
 
-    // -------------------------------
+    // ======================================
     // COLUMNAS
-    // -------------------------------
+    // ======================================
 
     columna: {
         position: 'absolute',
@@ -668,9 +662,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#e83b91',
     },
 
-    // -------------------------------
+    // ======================================
     // BLOQUES
-    // -------------------------------
+    // ======================================
 
     bloque: {
         position: 'absolute',
@@ -680,12 +674,14 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
 
-    // -------------------------------
+    // ======================================
     // ALIEN
-    // -------------------------------
+    // ======================================
 
     alien: {
         position: 'absolute',
+        width: ANCHO_ALIEN,
+        height: ALTO_ALIEN,
     },
 
     alienImage: {
@@ -694,9 +690,9 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
     },
 
-    // -------------------------------
+    // ======================================
     // BASE
-    // -------------------------------
+    // ======================================
 
     base: {
         position: 'absolute',
@@ -704,18 +700,16 @@ const styles = StyleSheet.create({
         left: 0,
         width: width,
         height: 70,
+
         backgroundColor: '#8b4512',
 
         borderTopWidth: 8,
         borderTopColor: '#4caf50',
-
-        // IMPORTANTE:
-        // La base NO participa de las colisiones.
     },
 
-    // -------------------------------
+    // ======================================
     // BOTONES
-    // -------------------------------
+    // ======================================
 
     boton: {
         position: 'absolute',
@@ -732,29 +726,18 @@ const styles = StyleSheet.create({
     texto: {
         color: 'white',
         fontSize: 35,
+        fontWeight: 'bold',
     },
-
-    // -------------------------------
-    // IZQUIERDA
-    // -------------------------------
 
     izquierda: {
         left: 25,
         bottom: 45,
     },
 
-    // -------------------------------
-    // DERECHA
-    // -------------------------------
-
     derecha: {
         right: 25,
         bottom: 45,
     },
-
-    // -------------------------------
-    // SALTO IZQUIERDO
-    // -------------------------------
 
     saltoIzquierdo: {
         left: 25,
@@ -762,14 +745,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#28a745',
     },
 
-    // -------------------------------
-    // SALTO DERECHO
-    // -------------------------------
-
     saltoDerecho: {
         right: 25,
         bottom: 125,
         backgroundColor: '#28a745',
     },
-
 });

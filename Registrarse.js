@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {View,Text,StyleSheet,TextInput,TouchableOpacity,ImageBackground} 
 from 'react-native';
-//import IniciarSesion from './IniciarSesion';
 
 
 export default function Registrarse({ navigation }) {

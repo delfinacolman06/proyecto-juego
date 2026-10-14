@@ -1,169 +1,38 @@
-/* import React from 'react';
-import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
-import { createStackNavigator } from '@react-navigation/stack';
-/* import BotonJugar from './BotonJugar'; */
-/* import Nivel1 from './screen/Nivel1';
-import Nivel2 from './screen/Nivel2';
-import Nivel3 from './screen/Nivel3';
-const Stack = createStackNavigator();
-
-function Niveles({ navigation }) {
-  return (
-    <View style={styles.center}>
-      <Text style={styles.titulo}>Completa los niveles</Text>
-      <View style={styles.botones}>
-        <TouchableOpacity style={styles.boton} onPress={() => navigation.navigate('Nivel 1')}>
-        <Text style={styles.texto}>Nivel 1</Text>
-      </TouchableOpacity>
-
-       <TouchableOpacity style={styles.boton} onPress={() => navigation.navigate('Nivel 2')}>
-        <Text style={styles.texto}>Nivel 2</Text>
-      </TouchableOpacity>
-
-       <TouchableOpacity style={styles.boton} onPress={() => navigation.navigate('Nivel 3')}>
-        <Text style={styles.texto}>Nivel 3</Text>
-      </TouchableOpacity>
-      </View>
-    </View>
-  );
-}
-export default function MyStack() {
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        /*headerStyle: {
-          backgroundColor: '#1c3482',
-        },*//*
-        headerTintColor:   '#ffffff',
-        headerTitleStyle: {
-          fontSize: 18,
-          fontWeight: 'bold',
-        },*/  
-/*         headerShown: false,
-        cardStyle: {
-          backgroundColor: 'transparent',
-        },
-      }}
-    >
-      <Stack.Screen
-        name="Niveles"
-        component={Niveles}
-        options={{ title: 'Niveles' }}
-      />
-      <Stack.Screen
-        name="Nivel 1"
-        component={Nivel1}
-        options={{ title: 'Nivel 1' }}
-      />
-       <Stack.Screen
-        name="Nivel 2"
-        component={Nivel2}
-        options={{ title: 'Nivel 2' }}
-      />
-       <Stack.Screen
-        name="Nivel 3"
-        component={Nivel3}
-        options={{ title: 'Nivel 3' }}
-      />
-    </Stack.Navigator>
-  );
-} *//*
-const styles = StyleSheet.create({
-container:{
-    flex:1,
-    alignItems:'center',
-    backgroundColor:'transparent',
-},
-
-center:{
-    width:'100%',
-    alignItems:'center',
-},
-
-titulo: {
-    color: '#d6e3ff',
-    fontSize: 25,
-    fontWeight: 'bold',
-    marginBottom: 30,
-    margin: 50,
-    textAlign: 'center',
-    fontFamily: "'Courier New', monospace",
-    fontWeight: '900',      
-  },
-
-boton:{
-    backgroundColor:'#0a188499',
-    paddingVertical:15,
-    width:'30%',
-    borderRadius:25,
-    alignItems:'center',
-    marginBottom:20,
-},
-
-texto:{
-    color:'white',
-    fontSize:18,
-    fontWeight:'bold',
-}, 
-botones: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    marginTop: 50,
-    alignItems: 'center',
-    width: '100%',
-    marginBottom: 30,
-  },
-
-});
- */ 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground} from 'react-native';
 
 export default function Niveles({ navigation }) {
   return (
-    <View style={styles.center}>
-
-      <Text style={styles.titulo}>
-        Completa los niveles
-      </Text>
+    <ImageBackground source={require('./assets/fondoMenu.png')} style={styles.center} resizeMode="cover">
+      <Text style={styles.titulo}>Completa los niveles</Text>
 
       <View style={styles.botones}>
-
         <TouchableOpacity
           style={styles.boton}
           onPress={() => navigation.navigate('Nivel 1')}
         >
-          <Text style={styles.texto}>
-            Nivel 1
-          </Text>
+          <Text style={styles.texto}>Nivel 1</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.boton}
           onPress={() => navigation.navigate('Nivel 2')}
         >
-          <Text style={styles.texto}>
-            Nivel 2
-          </Text>
+          <Text style={styles.texto}>Nivel 2</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.boton}
           onPress={() => navigation.navigate('Nivel 3')}
         >
-          <Text style={styles.texto}>
-            Nivel 3
-          </Text>
+          <Text style={styles.texto}>Nivel 3</Text>
         </TouchableOpacity>
-
       </View>
-
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-
   center: {
     flex: 1,
     width: '100%',
@@ -175,10 +44,9 @@ const styles = StyleSheet.create({
     color: '#d6e3ff',
     fontSize: 25,
     fontWeight: '900',
+    marginTop: 50,
     marginBottom: 30,
-    margin: 50,
     textAlign: 'center',
-    fontFamily: "'Courier New', monospace",
   },
 
   boton: {
@@ -204,5 +72,4 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 30,
   },
-
 });

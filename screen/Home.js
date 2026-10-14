@@ -1,66 +1,32 @@
 import React from 'react';
-import { View, Text, StyleSheet, Button, TouchableOpacity, ImageBackground } from 'react-native';
-import { createStackNavigator } from '@react-navigation/stack';
-import Niveles from '../Niveles';
-
-const Stack = createStackNavigator();
-
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 function Home({ navigation }) {
   return (
     <View style={styles.center}>
-      <TouchableOpacity style={styles.boton} onPress={() => navigation.navigate('Niveles')}>
-      <Text style={styles.texto}>Niveles</Text>
+
+      <TouchableOpacity
+        style={styles.boton}
+        onPress={() => navigation.navigate('Niveles')}
+      >
+        <Text style={styles.texto}>
+          Niveles
+        </Text>
       </TouchableOpacity>
-      
+
     </View>
   );
 }
-export default function MyStack() {
-  return (
-    
-    <Stack.Navigator
-    
-      screenOptions={{
-        /*headerStyle: {
-          backgroundColor: '#1c3482',
-        },*/
-        headerTintColor: '#ffffff',
-        /*headerTitleStyle: {
-          fontSize: 18,
-          fontWeight: 'bold',
-        },*/  
-        headerShown: false,
-       /* cardStyle: {
-          backgroundColor: '#1552d4',
-        },*/
-        cardStyle: {
-          backgroundColor: 'transparent',
-        },
-      }}
-    >
-      <Stack.Screen
-        name="🏠︎ Home"
-        component={Home}
-        options={{ title: 'Inicio' }}
-      />
-      <Stack.Screen
-        name="Niveles"
-        component={Niveles}
-        options={{ title: 'Niveles' }}
-      />
-    </Stack.Navigator>
-    
-  );
-}
+
+export default Home;
+
 const styles = StyleSheet.create({
   center: {
     flex: 1,
-    
     alignItems: 'center',
     backgroundColor: 'transparent',
-    
   },
+
   boton: {
     width: 250,
     height: 80,
@@ -72,12 +38,14 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#00000066',
   },
-  texto:{
-    color:'white',
-    fontSize:18,
-    fontWeight:'bold',
-}, 
+
+  texto: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
 });
+
 /*TRANSPARENCIA:
     Color     |   Opacidad
 --------------|---------------

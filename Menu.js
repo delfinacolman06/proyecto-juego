@@ -46,7 +46,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react
 import Home from './screen/Home';
 import Rankings from './screen/Rankings';
 import Saludo from './Saludo';
-import Ajustes from './screen/Ajustes';
+import Ajustes from './screen/MenuAjustes';
 
 const Tab = createMaterialTopTabNavigator();
 function Menu({ navigation }) {

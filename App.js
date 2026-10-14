@@ -61,6 +61,7 @@ export default function App() {
   )
 }
  */
+
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -80,53 +81,77 @@ const Stack = createStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
+
       <Stack.Navigator
         screenOptions={{
-          headerShown: false,
+          headerShown: true,
+          headerTintColor: '#ffffff',
+          headerStyle: {
+            backgroundColor: '#1c3482',
+          },
+          headerTitleStyle: {
+            fontSize: 18,
+            fontWeight: 'bold',
+          },
         }}
       >
 
         <Stack.Screen
           name="Jugar"
           component={Jugar}
+          options={{ headerShown: false }}
         />
 
         <Stack.Screen
           name="IniciarSesion"
           component={IniciarSesion}
+          options={{ headerShown: false }}
         />
 
         <Stack.Screen
           name="Registrarse"
           component={Registrarse}
+          options={{ headerShown: false }}
         />
 
         <Stack.Screen
           name="Menu"
           component={Menu}
+          options={{ headerShown: false }}
         />
 
         <Stack.Screen
           name="Niveles"
           component={Niveles}
+          options={{
+            title: 'Niveles',
+          }}
         />
-
         <Stack.Screen
           name="Nivel 1"
           component={Nivel1}
+          options={{
+            headerShown: false,
+          }}
         />
-
         <Stack.Screen
           name="Nivel 2"
           component={Nivel2}
+          options={{
+            title: 'Nivel 2',
+          }}
         />
 
         <Stack.Screen
           name="Nivel 3"
           component={Nivel3}
+          options={{
+            title: 'Nivel 3',
+          }}
         />
 
       </Stack.Navigator>
+
     </NavigationContainer>
   );
 }

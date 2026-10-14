@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {Text,StyleSheet,ScrollView,StatusBar,View} from 'react-native';
+import {Text,StyleSheet,ScrollView,StatusBar,View,Image} from 'react-native';
 
 const jugadores = [
   { id: '1', avatar: '👩🏻', nombre: 'miusuario', km: '12000km', puesto: '01', color: '#F8D9A0' },
@@ -26,10 +26,13 @@ export default function Rankings() {
         contentContainerStyle={styles.scrollContent}
       >
         {/* Título */}
-        <View style={styles.header}>
-          <Text style={styles.flag}>🏁</Text>
-          <Text style={styles.title}>RANKING</Text>
-          <Text style={styles.flag}>🏁</Text>
+       <View style={styles.header}>
+
+  <Image
+    source={require('../assets/tituloRanking.png')}
+    style={styles.header}
+    resizeMode="contain"
+  />
         </View>
 
         {/* Primer puesto destacado */}
@@ -104,7 +107,7 @@ const styles = StyleSheet.create({
   },
 
   header: {
-    height: 76,
+    height: 110,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -124,8 +127,8 @@ const styles = StyleSheet.create({
 
   firstPlace: {
     height: 109,
-    backgroundColor: '#35B2F8',
-    borderRadius: 17,
+    backgroundColor: '#35b1f89c',
+    borderRadius: 20,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 17,
@@ -176,7 +179,7 @@ const styles = StyleSheet.create({
   },
 
   rankingList: {
-    backgroundColor: '#075493',
+    backgroundColor: '#075493a4',
     borderRadius: 16,
     paddingHorizontal: 17,
     paddingVertical: 5,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Button, TouchableOpacity,Image } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import BotonJugar from './BotonJugar';
 import Nivel1 from './screen/Nivel1';
@@ -10,7 +10,7 @@ const Stack = createStackNavigator();
 function Niveles({ navigation }) {
   return (
     <View style={styles.center}>
-      <Text style={styles.titulo}>Completa los niveles</Text>
+      <Text style={styles.titulo}>¡Completa los niveles!</Text>
       <View style={styles.botones}>
         <TouchableOpacity style={styles.boton} onPress={() => navigation.navigate('Nivel 1')}>
         <Text style={styles.texto}>Nivel 1</Text>
@@ -24,6 +24,11 @@ function Niveles({ navigation }) {
         <Text style={styles.texto}>Nivel 3</Text>
       </TouchableOpacity>
       </View>
+    <Image
+        source={require('./assets/alienNave.png')}
+        style={styles.alien}
+        resizeMode="contain"
+      />
     </View>
   );
 }
@@ -78,6 +83,13 @@ container:{
 center:{
     width:'100%',
     alignItems:'center',
+},
+
+alien: {
+  width: 280,
+  height: 280,
+  marginTop: 10,
+  marginBottom: 10,
 },
 
 titulo: {

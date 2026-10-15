@@ -3,14 +3,14 @@ import React from 'react';
 import {Text,StyleSheet,ScrollView,StatusBar,View,Image} from 'react-native';
 
 const jugadores = [
-  { id: '1', avatar: '👩🏻', nombre: 'miusuario', km: '12000km', puesto: '01', color: '#F8D9A0' },
-  { id: '2', avatar: '👨🏻', nombre: 'usuario 1', km: '11000km', puesto: '02', color: '#79C8F2' },
-  { id: '3', avatar: '👩🏽', nombre: 'usuario 2', km: '1000km', puesto: '03', color: '#FFB900' },
-  { id: '4', avatar: '👨🏼', nombre: 'usuario 3', km: '900km', puesto: '04', color: '#F8E5CF' },
-  { id: '5', avatar: '👩🏻', nombre: 'usuario 4', km: '800km', puesto: '05', color: '#FFC928' },
-  { id: '6', avatar: '👧🏻', nombre: 'usuario 5', km: '700km', puesto: '06', color: '#F5D57B' },
-  { id: '7', avatar: '🧑🏻', nombre: 'usuario 6', km: '600km', puesto: '07', color: '#9BD9F6' },
-  { id: '8', avatar: '👩🏼', nombre: 'usuario 7', km: '500km', puesto: '08', color: '#F7C7D2' }
+  { id: '1', avatar: '👩🏻', nombre: 'miusuario', km: '12000', puesto: '01', color: '#F8D9A0' },
+  { id: '2', avatar: '👨🏻', nombre: 'usuario 1', km: '11000', puesto: '02', color: '#79C8F2' },
+  { id: '3', avatar: '👩🏽', nombre: 'usuario 2', km: '1000', puesto: '03', color: '#FFB900' },
+  { id: '4', avatar: '👨🏼', nombre: 'usuario 3', km: '900', puesto: '04', color: '#F8E5CF' },
+  { id: '5', avatar: '👩🏻', nombre: 'usuario 4', km: '800', puesto: '05', color: '#FFC928' },
+  { id: '6', avatar: '👧🏻', nombre: 'usuario 5', km: '700', puesto: '06', color: '#F5D57B' },
+  { id: '7', avatar: '🧑🏻', nombre: 'usuario 6', km: '600', puesto: '07', color: '#9BD9F6' },
+  { id: '8', avatar: '👩🏼', nombre: 'usuario 7', km: '500', puesto: '08', color: '#F7C7D2' }
 ];
 
 const primero=jugadores[0];

@@ -1,224 +1,411 @@
-import React from 'react';
 
-import {Text,StyleSheet,ScrollView,StatusBar,View,Image} from 'react-native';
+import React, { useEffect, useState } from 'react';
 
-const jugadores = [
-  { id: '1', avatar: '👩🏻', nombre: 'miusuario', km: '12000', puesto: '01', color: '#F8D9A0' },
-  { id: '2', avatar: '👨🏻', nombre: 'usuario 1', km: '11000', puesto: '02', color: '#79C8F2' },
-  { id: '3', avatar: '👩🏽', nombre: 'usuario 2', km: '1000', puesto: '03', color: '#FFB900' },
-  { id: '4', avatar: '👨🏼', nombre: 'usuario 3', km: '900', puesto: '04', color: '#F8E5CF' },
-  { id: '5', avatar: '👩🏻', nombre: 'usuario 4', km: '800', puesto: '05', color: '#FFC928' },
-  { id: '6', avatar: '👧🏻', nombre: 'usuario 5', km: '700', puesto: '06', color: '#F5D57B' },
-  { id: '7', avatar: '🧑🏻', nombre: 'usuario 6', km: '600', puesto: '07', color: '#9BD9F6' },
-  { id: '8', avatar: '👩🏼', nombre: 'usuario 7', km: '500', puesto: '08', color: '#F7C7D2' }
-];
+import {
+    View,
+    Text,
+    StyleSheet,
+    ScrollView,
+    ActivityIndicator,
+    Image
+} from 'react-native';
 
-const primero=jugadores[0];
+// Convertir la duración a HH:MM:SS
+const formatoTiempo = (duracion) => {
 
-export default function Rankings() {
+    if (
+        duracion === null ||
+        duracion === undefined ||
+        duracion === ''
+    ) {
+        return '00:00:00';
+    }
+
+    // Si MySQL ya devuelve HH:MM:SS
+    if (
+        typeof duracion === 'string' &&
+        /^\d{1,2}:\d{2}:\d{2}$/.test(duracion)
+    ) {
+        return duracion;
+    }
+
+    // Si llega como segundos
+    const segundos = Number(duracion);
+
+    if (!Number.isFinite(segundos)) {
+        return '00:00:00';
+    }
+
+    const horas = Math.floor(segundos / 3600);
+    const minutos = Math.floor((segundos % 3600) / 60);
+    const segundosRestantes = Math.floor(segundos % 60);
 
     return (
-        <View style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+        String(horas).padStart(2, '0') + ':' +
+        String(minutos).padStart(2, '0') + ':' +
+        String(segundosRestantes).padStart(2, '0')
+    );
+};
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
-        {/* Título */}
-       <View style={styles.header}>
+export default function Rankings({ route, cuenta: cuentaProp }) {
 
-  <Image
-    source={require('../assets/tituloRanking.png')}
-    style={styles.header}
-    resizeMode="contain"
-  />
-        </View>
+    const cuenta = cuentaProp || route?.params?.cuenta;
+    const idUsuarioActual = cuenta?.idusuario;
 
-        {/* Primer puesto destacado */}
-        <View style={styles.firstPlace}>
-          <View
-            style={[
-              styles.avatar,
-              { backgroundColor: primero.color },
-            ]}
-          >
-            <Text style={styles.avatarText}>{primero.avatar}</Text>
-          </View>
+    const [jugadores, setJugadores] = useState([]);
+    const [cargando, setCargando] = useState(true);
+    const [error, setError] = useState('');
 
-          <Text style={styles.firstName} numberOfLines={1}>
-            {primero.nombre}
-          </Text>
+    const API_URL = 'http://192.168.0.159:3000';
 
-          <View style={styles.firstDivider} />
+    useEffect(() => {
 
-          <Text style={styles.firstKm}>{primero.km}</Text>
+        const obtenerRanking = async () => {
 
-          <View style={styles.firstDivider} />
+            try {
 
-          <Text style={styles.firstPosition}>{primero.puesto}</Text>
-        </View>
+                setCargando(true);
+                setError('');
 
-        {/* Lista de participantes */}
-        <View style={styles.rankingList}>
-          {jugadores.map((jugador, index) => (
-            <View key={jugador.id} style={styles.row}>
-              <View
-                style={[
-                  styles.avatar,
-                  { backgroundColor: jugador.color },
-                ]}
-              >
-                <Text style={styles.avatarText}>
-                  {jugador.avatar}
-                </Text>
-              </View>
+                console.log('CUENTA RECIBIDA EN RANKINGS:', cuenta);
+                console.log('ID DEL USUARIO ACTUAL:', idUsuarioActual);
 
-              <Text style={styles.name} numberOfLines={1}>
-                {jugador.nombre}
-              </Text>
+                const respuesta = await fetch(`${API_URL}/ranking`);
+                const datos = await respuesta.json();
 
-              <View style={styles.divider} />
+                console.log('DATOS RECIBIDOS DEL RANKING:', datos);
 
-              <Text style={styles.km}>{jugador.km}</Text>
+                if (!respuesta.ok) {
+                    throw new Error(
+                        datos.mensaje || 'No se pudo obtener el ranking.'
+                    );
+                }
 
-              <View style={styles.divider} />
+                if (!Array.isArray(datos)) {
+                    throw new Error('El servidor no devolvió una lista válida.');
+                }
 
-              <Text style={styles.position}>
-                {jugador.puesto}
-              </Text>
+                // Ordenar por mayor puntaje y luego menor duración
+                const convertirASegundos = (tiempo) => {
+
+                    if (!tiempo) return Infinity;
+
+                    if (typeof tiempo === 'number') {
+                        return tiempo;
+                    }
+
+                    const partes = String(tiempo).split(':').map(Number);
+
+                    if (
+                        partes.length !== 3 ||
+                        partes.some(parte => !Number.isFinite(parte))
+                    ) {
+                        return Infinity;
+                    }
+
+                    return (
+                        partes[0] * 3600 +
+                        partes[1] * 60 +
+                        partes[2]
+                    );
+                };
+
+                const ordenados = [...datos].sort((a, b) => {
+
+                    const diferenciaPuntaje =
+                        Number(b.puntaje) - Number(a.puntaje);
+
+                    if (diferenciaPuntaje !== 0) {
+                        return diferenciaPuntaje;
+                    }
+
+                    return (
+                        convertirASegundos(a.duracion) -
+                        convertirASegundos(b.duracion)
+                    );
+                });
+
+                setJugadores(ordenados);
+
+            } catch (err) {
+
+                console.log('ERROR AL OBTENER RANKING:', err);
+                setError('No se pudo cargar el ranking.');
+
+            } finally {
+
+                setCargando(false);
+
+            }
+        };
+
+        obtenerRanking();
+
+    }, [idUsuarioActual]);
+
+    // Buscar la posición del usuario actual
+    const posicionUsuario = jugadores.findIndex(
+        jugador =>
+            Number(jugador.usuarios_idusuario) ===
+            Number(idUsuarioActual)
+    );
+
+    return (
+
+        <ScrollView contentContainerStyle={styles.contenedor}>
+
+            {/* IMAGEN DEL TÍTULO */}
+            <View style={styles.contenedorTitulo}>
+
+                <Image
+                    source={require('../assets/tituloRanking.png')}
+                    style={styles.imagenTitulo}
+                    resizeMode="contain"
+                />
+
             </View>
-          ))}
-        </View>
-      </ScrollView>
-    </View>
-  );
+
+            {cargando ? (
+
+                <ActivityIndicator
+                    size="large"
+                    color="#ffffff"
+                />
+
+            ) : error !== '' ? (
+
+                <Text style={styles.error}>
+                    {error}
+                </Text>
+
+            ) : (
+
+                <>
+
+                    {/* MI POSICIÓN ARRIBA */}
+                    <View style={styles.miPosicion}>
+
+                        <Text style={styles.subtitulo}>
+                            MI POSICIÓN
+                        </Text>
+
+                        {idUsuarioActual === undefined ||
+                        idUsuarioActual === null ? (
+
+                            <Text style={styles.mensaje}>
+                                No se recibió el ID de tu cuenta.
+                            </Text>
+
+                        ) : posicionUsuario !== -1 ? (
+
+                            <Text style={styles.mensaje}>
+                                Estás en el puesto {posicionUsuario + 1}.
+                            </Text>
+
+                        ) : (
+
+                            <Text style={styles.mensaje}>
+                                Todavía no tenés partidas registradas.
+                            </Text>
+
+                        )}
+
+                    </View>
+
+                    {/* RANKING GENERAL */}
+                    <Text style={styles.tituloGeneral}>
+                        GENERAL
+                    </Text> 
+
+                    <View style={styles.encabezado}>
+
+                        <Text style={styles.columnaPuesto}>
+                            Puesto
+                        </Text>
+
+                        <Text style={styles.columnaUsuario}>
+                            Usuario
+                        </Text>
+
+                        <Text style={styles.columnaPuntaje}>
+                            Puntos
+                        </Text>
+
+                        <Text style={styles.columnaTiempo}>
+                            Tiempo
+                        </Text>
+
+                    </View>
+
+                    {jugadores.length === 0 ? (
+
+                        <Text style={styles.mensaje}>
+                            Todavía no hay partidas registradas.
+                        </Text>
+
+                    ) : (
+
+                        jugadores.map((item, index) => {
+
+                            const esUsuarioActual =
+                                Number(item.usuarios_idusuario) ===
+                                Number(idUsuarioActual);
+
+                            return (
+
+                                <View
+                                    key={item.idpartida}
+                                    style={[
+                                        styles.fila,
+                                        esUsuarioActual && styles.filaActual
+                                    ]}
+                                >
+
+                                    <Text style={styles.columnaPuesto}>
+                                        {index + 1}°
+                                    </Text>
+
+                                    <Text style={styles.columnaUsuario}>
+                                        {item.nombre_usuario}
+                                    </Text>
+
+                                    <Text style={styles.columnaPuntaje}>
+                                        {item.puntaje}
+                                    </Text>
+
+                                    <Text style={styles.columnaTiempo}>
+                                        {formatoTiempo(item.duracion)}
+                                    </Text>
+
+                                </View>
+
+                            );
+
+                        })
+
+                    )}
+
+                </>
+
+            )}
+
+        </ScrollView>
+
+    );
+
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-       backgroundColor: 'transparent',
-  },
 
-  scrollContent: {
-    paddingHorizontal: 11,
-    paddingBottom: 20,
-  },
+    contenedor: {
+        flexGrow: 1,
+        backgroundColor: 'transparent',
+        padding: 15,
+        paddingTop: 15
+    },
 
-  header: {
-    height: 110,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-  },
+    contenedorTitulo: {
+        height: 110,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 15
+    },
 
-  flag: {
-    fontSize: 39,
-  },
+    imagenTitulo: {
+        width: '85%',
+        height: 100
+    },
 
-  title: {
-    color: '#f9f9f9',
-    fontSize: 35,
-    fontWeight: '900',
-    letterSpacing: 0.3,
-  },
+    miPosicion: {
+        backgroundColor: '#57319e',
+        borderRadius: 12,
+        padding: 18,
+        marginBottom: 25,
+        alignItems: 'center'
+    },
 
-  firstPlace: {
-    height: 109,
-    backgroundColor: '#35b1f89c',
-    borderRadius: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 17,
-    marginBottom: 18,
-  },
+    subtitulo: {
+        color: '#ffffff',
+        fontWeight: 'bold',
+        fontSize: 20,
+        marginBottom: 10
+    },
 
-  avatar: {
-    width: 43,
-    height: 43,
-    borderRadius: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
-    overflow: 'hidden',
-    flexShrink: 0,
-  },
+    mensaje: {
+        color: '#ffffff',
+        fontSize: 15,
+        textAlign: 'center',
+        marginTop: 8
+    },
 
-  avatarText: {
-    fontSize: 31,
-    textAlign: 'center',
-  },
+    tituloGeneral: {
+        color: '#ffffff',
+        fontSize: 21,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: 12
+    },
 
-  firstName: {
-    color: '#FFFFFF',
-    fontSize: 19,
-    fontWeight: '800',
-    marginLeft: 10,
-    flex: 1,
-  },
+    encabezado: {
+        flexDirection: 'row',
+        backgroundColor: '#57319e',
+        paddingVertical: 14,
+        paddingHorizontal: 5,
+        borderRadius: 10,
+        marginBottom: 8
+    },
 
-  firstDivider: {
-    width: 2,
-    height: 57,
-    backgroundColor: '#FFFFFF',
-    marginHorizontal: 7,
-  },
+    fila: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#7655ae',
+        paddingVertical: 15,
+        paddingHorizontal: 5,
+        borderRadius: 10,
+        marginBottom: 8
+    },
 
-  firstKm: {
-    color: '#FFFFFF',
-    fontSize: 17,
-    fontWeight: '800',
-  },
+    filaActual: {
+        backgroundColor: '#3d226f',
+        borderWidth: 2,
+        borderColor: '#ffffff'
+    },
 
-  firstPosition: {
-    color: '#FFFFFF',
-    fontSize: 52,
-    fontWeight: '900',
-    marginLeft: -1,
-  },
+    columnaPuesto: {
+        flex: 0.8,
+        textAlign: 'center',
+        color: '#ffffff',
+        fontWeight: 'bold',
+        fontSize: 12
+    },
 
-  rankingList: {
-    backgroundColor: '#075493a4',
-    borderRadius: 16,
-    paddingHorizontal: 17,
-    paddingVertical: 5,
-  },
+    columnaUsuario: {
+        flex: 1.5,
+        textAlign: 'center',
+        color: '#ffffff',
+        fontSize: 12,
+        fontWeight: 'bold'
+    },
 
-  row: {
-    height: 55,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
+    columnaPuntaje: {
+        flex: 0.9,
+        textAlign: 'center',
+        color: '#ffffff',
+        fontSize: 12
+    },
 
-  name: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '800',
-    marginLeft: 10,
-    flex: 1,
-  },
+    columnaTiempo: {
+        flex: 1.2,
+        textAlign: 'center',
+        color: '#ffffff',
+        fontSize: 11
+    },
 
-  divider: {
-    width: 2,
-    height: 40,
-    backgroundColor: '#FFFFFF',
-    marginHorizontal: 7,
-  },
+    error: {
+        color: '#ff4444',
+        textAlign: 'center',
+        fontSize: 15,
+        marginTop: 20
+    }
 
-  km: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '800',
-    textAlign: 'left',
-    minWidth: 81,
-  },
-
-  position: {
-    color: '#FFFFFF',
-    fontSize: 32,
-    fontWeight: '900',
-    width: 55,
-    textAlign: 'right',
-  },
 });

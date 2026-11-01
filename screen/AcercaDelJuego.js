@@ -1,11 +1,10 @@
-
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 export default function AcercaDelJuego() {
     return (
         <View style={styles.container}>
-            <Text style={styles.texto}>Pantalla de Acerca del juego</Text>
+            <Text style={styles.texto}>Pantalla de Idioma</Text>
         </View>
     );
 }

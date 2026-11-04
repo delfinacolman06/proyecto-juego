@@ -56,7 +56,7 @@ export default function Rankings({ route, cuenta: cuentaProp }) {
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState('');
 
-    const API_URL = 'http://192.168.0.159:3000';
+    const API_URL = 'http://192.168.0.44:3000';
 
     useEffect(() => {
 

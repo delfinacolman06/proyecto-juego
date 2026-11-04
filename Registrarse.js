@@ -23,7 +23,7 @@ export default function Registrarse({ navigation }) {
   const [cargando, setCargando] = useState(false);
 
   // Dirección del servidor
-  const API_URL = 'http://192.168.0.159:3000';
+  const API_URL = 'http://192.168.0.44:3000';
 
   // Función para registrar
   const registrar = async () => {

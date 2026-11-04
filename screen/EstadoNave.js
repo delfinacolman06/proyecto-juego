@@ -1,92 +1,223 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground} from 'react-native';
 
-export default function EstadoNave({ navigation }) {
+import React, { useState, useCallback } from 'react';
+
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  ImageBackground,
+  ScrollView
+} from 'react-native';
+
+import { useFocusEffect } from '@react-navigation/native';
+
+const API_URL = 'http://192.168.0.44:3000';
+
+export default function EstadoNave({ route }) {
+
+  const cuenta = route.params?.cuenta;
+  const idusuario = cuenta?.idusuario;
+
+  const [niveles, setNiveles] = useState([
+    { nivel: 1, piezas: 0, completado: 0 },
+    { nivel: 2, piezas: 0, completado: 0 },
+    { nivel: 3, piezas: 0, completado: 0 }
+  ]);
+
+  const [totalPiezas, setTotalPiezas] = useState(0);
+  const [error, setError] = useState('');
+
+  useFocusEffect(
+    useCallback(() => {
+
+      let activo = true;
+
+      const cargarEstado = async () => {
+
+        if (!idusuario) {
+          setError('No se recibió el ID del usuario.');
+          return;
+        }
+
+        try {
+
+          setError('');
+
+          /* const respuesta = await fetch(
+            `${API_URL}/estadoNave/${idusuario}`
+          );
+
+          const datos = await respuesta.json(); */
+          const respuesta = await fetch(
+  `${API_URL}/estadoNave/${idusuario}`
+);
+
+const textoRespuesta = await respuesta.text();
+
+console.log('ESTADO HTTP:', respuesta.status);
+console.log('RESPUESTA DEL SERVIDOR:', textoRespuesta);
+
+let datos;
+
+try {
+  datos = JSON.parse(textoRespuesta);
+} catch (error) {
+  throw new Error(
+    'El servidor no devolvió JSON. Revisá la ruta del backend.'
+  );
+}
+
+if (!respuesta.ok) {
+  throw new Error(datos.mensaje || 'Error al consultar la nave');
+}
+
+          if (!respuesta.ok) {
+            throw new Error(datos.mensaje || 'Error al consultar la nave');
+          }
+
+          if (activo) {
+            setNiveles(datos.niveles);
+            setTotalPiezas(datos.totalPiezas);
+          }
+
+        } catch (err) {
+
+          console.log('Error al cargar estado de nave:', err);
+
+          if (activo) {
+            setError('No se pudo cargar el estado de la nave.');
+          }
+
+        }
+
+      };
+
+      cargarEstado();
+
+      return () => {
+        activo = false;
+      };
+
+    }, [idusuario])
+  );
+
+  const piezasNivel1 = niveles.find(n => n.nivel === 1)?.piezas || 0;
+  const piezasNivel2 = niveles.find(n => n.nivel === 2)?.piezas || 0;
+  const piezasNivel3 = niveles.find(n => n.nivel === 3)?.piezas || 0;
+
+  const naveCompleta = totalPiezas >= 9;
+
   return (
-    <ImageBackground source={require('../assets/fondoMenu.png')} style={styles.center} resizeMode="cover">
-      <Text style={styles.titulo}>Estado de la Nave</Text>
 
-      <View style={styles.botones}>
-        <View style={styles.contorno}>
-            <Text style={styles.textoRec}>
-                Tu nave se encuentra en buen estado. Puedes continuar jugando sin preocupaciones.
-            </Text>
-        </View>
-        <View style={styles.contorno}>
-            <Text style={styles.textoRec}>
-                Imagen de la nave y sus actualizaciones cuando pasa de nivel
-            </Text>
-        </View>
-        <View style={styles.contorno}>
-        <Text style={styles.textoRec}>
-            Comienza apartir del nivel 1 y completa los niveles para desbloquear el siguiente: 
+    <ImageBackground
+      source={require('../assets/fondoMenu.png')}
+      style={styles.fondo}
+      resizeMode="cover"
+    >
+
+      <ScrollView contentContainerStyle={styles.container}>
+
+        <Text style={styles.titulo}>
+          Estado de la nave
         </Text>
-        </View>
-        <TouchableOpacity style={styles.boton} onPress={() => navigation.navigate('Nivel 1')}
-        >
-          <Text style={styles.texto}>Nivel 1</Text>
-        </TouchableOpacity>
 
-      </View>
+        <Image
+          source={
+            naveCompleta
+              ? require('../assets/naveCompleta.png')
+              : require('../assets/naveIncompleta.png')
+          }
+          style={styles.nave}
+          resizeMode="contain"
+        />
+
+        <Text style={styles.total}>
+          Piezas obtenidas: {totalPiezas} / 9
+        </Text>
+
+        <View style={styles.niveles}>
+
+          <Text style={styles.subtitulo}>Nivel 1: {piezasNivel1}/3</Text>
+          <Text style={styles.subtitulo}>Nivel 2: {piezasNivel2}/3</Text>
+          <Text style={styles.subtitulo}>Nivel 3: {piezasNivel3}/3</Text>
+
+        </View>
+
+        {error !== '' && (
+          <Text style={styles.error}>{error}</Text>
+        )}
+
+        {naveCompleta && (
+          <Text style={styles.completo}>
+            ¡Completaste tu nave!
+          </Text>
+        )}
+
+      </ScrollView>
+
     </ImageBackground>
+
   );
 }
 
 const styles = StyleSheet.create({
-  center: {
+
+  fondo: {
     flex: 1,
-    width: '100%',
+  },
+
+  container: {
+    flexGrow: 1,
     alignItems: 'center',
-    backgroundColor: 'transparent',
+    justifyContent: 'center',
+    padding: 20,
   },
 
   titulo: {
-    color: '#d6e3ff',
-    fontSize: 25,
-    fontWeight: '900',
-    marginTop: 50,
+    color: 'white',
+    fontSize: 28,
+    fontWeight: 'bold',
     marginBottom: 30,
+  },
+
+  nave: {
+    width: 280,
+    height: 250,
+  },
+
+  total: {
+    color: 'white',
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginVertical: 20,
+  },
+
+  niveles: {
+    width: '85%',
+    backgroundColor: '#0a188477',
+    borderRadius: 15,
+    padding: 20,
+  },
+
+  subtitulo: {
+    color: 'white',
+    fontSize: 18,
+    marginVertical: 8,
     textAlign: 'center',
   },
 
-  boton: {
-    backgroundColor: '#0a188499',
-    paddingVertical: 15,
-    width: '30%',
-    borderRadius: 25,
-    alignItems: 'center',
-    marginBottom: 20,
+  error: {
+    color: '#ff5555',
+    fontSize: 16,
+    marginTop: 15,
   },
 
-  texto: {
-    color: 'white',
-    fontSize: 18,
+  completo: {
+    color: '#7CFF9B',
+    fontSize: 22,
     fontWeight: 'bold',
-  },
-  textoRec: {
-    color: 'white',
-    fontSize: 16,
-    width: '90%',
-    padding: 10,
-    fontWeight: 'bold',
-    justifyContent: 'center',
-    textAlign: 'justify',
-  },
-  contorno: {
-    width: '85%',
-    height: 'auto',
-    backgroundColor: '#121c65cc',
-    borderRadius: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#00000066',
-  },
-  botones: {
-    justifyContent: 'space-evenly',
-    marginTop: 40,
-    alignItems: 'center',
-    width: '100%',
-    marginBottom: 30,
-  },
+    marginTop: 20,
+  }
+
 });

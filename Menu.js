@@ -12,74 +12,76 @@ const Tab = createMaterialTopTabNavigator();
 
 export default function MyTab({ route }) {
 
-    // Recibir los datos enviados desde IniciarSesion
-    const cuenta = route.params?.cuenta;
+  const cuenta = route.params?.cuenta;
 
-    console.log('DATOS EN MENU:', cuenta);
+  console.log('DATOS EN MENU:', cuenta);
 
-    return (
-        <ImageBackground
-            source={require('./assets/fondoMenu.png')}
-            style={{ flex: 1 }}
-            resizeMode="cover"
-        >
+  return (
 
-            <Saludo />
+    <ImageBackground
+      source={require('./assets/fondoMenu.png')}
+      style={{ flex: 1 }}
+      resizeMode="cover"
+    >
 
-            <Tab.Navigator
-                screenOptions={{
-                    sceneStyle: {
-                        backgroundColor: 'transparent',
-                    },
+      <Saludo />
 
-                    tabBarLabelStyle: {
-                        fontSize: 14,
-                        fontWeight: 'bold',
-                    },
+      <Tab.Navigator
+        screenOptions={{
 
-                    tabBarItemStyle: {
-                        width: 135,
-                        height: 50
-                    },
+          sceneStyle: {
+            backgroundColor: 'transparent',
+          },
 
-                    tabBarStyle: {
-                        backgroundColor: 'transparent'
-                    },
+          tabBarLabelStyle: {
+            fontSize: 14,
+            fontWeight: 'bold',
+          },
 
-                    tabBarActiveTintColor: '#ffffff',
-                    tabBarInactiveTintColor: '#d6e3ff',
-                }}
-            >
+          tabBarItemStyle: {
+            width: 135,
+            height: 50
+          },
 
-                <Tab.Screen
-                    name="🏠︎ inicio"
-                    component={Home}
-                />
+          tabBarStyle: {
+            backgroundColor: 'transparent'
+          },
 
-                <Tab.Screen
-                    name="♛ ranking"
-                >
-                    {(props) => (
-                        <Rankings
-                            {...props}
-                            cuenta={cuenta}
-                        />
-                    )}
-                </Tab.Screen>
+          tabBarActiveTintColor: '#ffffff',
+          tabBarInactiveTintColor: '#d6e3ff',
 
-                <Tab.Screen
-                    name="ajustes"
-                >
-                    {(props) => (
-                        <Ajustes
-                            {...props}
-                            cuenta={cuenta}
-                        />
-                    )}
-                </Tab.Screen>
+        }}
+      >
 
-            </Tab.Navigator>
+        <Tab.Screen name="🏠︎ inicio">
+          {(props) => (
+            <Home
+              {...props}
+              cuenta={cuenta}
+            />
+          )}
+        </Tab.Screen>
 
-        </ImageBackground>
-    );
+        <Tab.Screen name="♛ ranking">
+          {(props) => (
+            <Rankings
+              {...props}
+              cuenta={cuenta}
+            />
+          )}
+        </Tab.Screen>
+
+        <Tab.Screen name="ajustes">
+          {(props) => (
+            <Ajustes
+              {...props}
+              cuenta={cuenta}
+            />
+          )}
+        </Tab.Screen>
+
+      </Tab.Navigator>
+
+    </ImageBackground>
+  );
 }

@@ -32,7 +32,7 @@ export default function Cuenta({ navigation, route }) {
     const [cargando, setCargando] = useState(false);
     const [error, setError] = useState('');
 
-    const API_URL = 'http://192.168.0.159:3000';
+    const API_URL = 'http://192.168.0.44:3000';
 
     // MODIFICAR DATOS DE LA CUENTA
     const modificarCuenta = async () => {

@@ -281,7 +281,7 @@ export default function Nivel3({ navigation, route }) {
                 }
             }
 
-            // Si el alien cae fuera de la pantalla, termina la partida.
+            // Si el alien cae fuera de la pantalla, termina la partida
             if (nuevoJugador.y > height) {
                 setActivo(false);
                 setPerdio(true);
@@ -348,9 +348,7 @@ export default function Nivel3({ navigation, route }) {
                     }
                 }
             }
-
-            // Eliminar plataformas que salieron por abajo.
-            // Eliminar plataformas que salieron por abajo.
+            // Eliminar plataformas que salieron por abajo
             const cantidadAntes = nuevasPlataformas.length;
 
             const plataformasEliminadas = nuevasPlataformas.filter(
@@ -367,7 +365,7 @@ export default function Nivel3({ navigation, route }) {
                 puntosRef.current += plataformasEliminadas * PUNTOS_BLOQUE;
                 setPuntos(puntosRef.current);
             }
-            // Crear plataformas nuevas arriba.
+            // Crear plataformas nuevas arriba
             while (nuevasPlataformas.length < CANTIDAD_BLOQUES) {
                 const masAlta = Math.min(
                     ...nuevasPlataformas.map(p => p.y)

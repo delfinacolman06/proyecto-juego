@@ -219,7 +219,7 @@ export default function Nivel1({ navigation, route }) {
                     y: p.y + diferencia,
                 }));
             }
-            // Generar una pieza obligatoria cada cierto tiempo.
+           
             const hayPieza = nuevasPlataformas.some(
                 p => p.objeto && p.objeto.tipo === 'pieza'
             );
@@ -251,7 +251,7 @@ export default function Nivel1({ navigation, route }) {
 
                 siguientePiezaRef.current = Date.now() + tiempoAleatorio();
             }
-            // Comprobar si aterriza sobre una plataforma.
+            // Comprobar si aterriza sobre una plataforma
             if (nuevoJugador.vy > 0) {
                 for (let i = 0; i < nuevasPlataformas.length; i++) {
                     const plataforma = nuevasPlataformas[i];
@@ -280,7 +280,7 @@ export default function Nivel1({ navigation, route }) {
                 }
             }
 
-            // Si el alien cae fuera de la pantalla, termina la partida.
+            // Si el alien cae fuera de la pantalla, termina la partida
             if (nuevoJugador.y > height) {
                 setActivo(false);
                 setPerdio(true);

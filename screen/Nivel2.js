@@ -218,7 +218,7 @@ export default function Nivel2({ navigation, route }) {
                     y: p.y + diferencia,
                 }));
             }
-            // Generar una pieza obligatoria cada cierto tiempo.
+            // Generar una pieza obligatoria cada cierto tiempo
             const hayPieza = nuevasPlataformas.some(
                 p => p.objeto && p.objeto.tipo === 'pieza'
             );

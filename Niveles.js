@@ -1,7 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground} from 'react-native';
 
-export default function Niveles({ navigation }) {
+export default function Niveles({ navigation, route }) {
+    const cuenta = route.params?.cuenta;
+    console.log('Cuenta recibida en el nivel:', cuenta);
   return (
     <ImageBackground source={require('./assets/fondoMenu.png')} style={styles.center} resizeMode="cover">
       <Text style={styles.titulo}>Completa los niveles</Text>
@@ -9,21 +11,21 @@ export default function Niveles({ navigation }) {
       <View style={styles.botones}>
         <TouchableOpacity
           style={styles.boton}
-          onPress={() => navigation.navigate('Nivel 1')}
+          onPress={() => navigation.navigate('Nivel 1', { cuenta: cuenta })}
         >
           <Text style={styles.texto}>Nivel 1</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.boton}
-          onPress={() => navigation.navigate('Nivel 2')}
+          onPress={() => navigation.navigate('Nivel 2', { cuenta: cuenta })}
         >
           <Text style={styles.texto}>Nivel 2</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.boton}
-          onPress={() => navigation.navigate('Nivel 3')}
+          onPress={() => navigation.navigate('Nivel 3', { cuenta: cuenta })}
         >
           <Text style={styles.texto}>Nivel 3</Text>
         </TouchableOpacity>

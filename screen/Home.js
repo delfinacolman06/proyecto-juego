@@ -1,19 +1,27 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
-function Home({ navigation }) {
+function Home({ navigation, cuenta }) {
   return (
     <View style={styles.center}>
 
-      <TouchableOpacity
-        style={styles.boton}
-        onPress={() => navigation.navigate('Niveles')}
-      >
+      <TouchableOpacity style={styles.boton}  onPress={() => navigation.navigate('Niveles', { cuenta: cuenta })}>
         <Text style={styles.texto}>
-          Niveles
+          Empezar
         </Text>
       </TouchableOpacity>
 
+      <TouchableOpacity style={styles.boton} onPress={() => navigation.navigate('ComoJugar')}>
+        <Text style={styles.texto}>
+          ¿Cómo jugar?
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.boton} onPress={() => navigation.navigate('EstadoNave', { cuenta: cuenta })}>
+        <Text style={styles.texto}>
+          Estado de la nave
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }
